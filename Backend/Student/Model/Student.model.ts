@@ -24,7 +24,7 @@ export class Student{
     ){
         try {
             const hashedPassword = await argon2.hash(password)
-            const newStudent = await prisma.Student.create({
+            const newStudent = await prisma.student.create({
                 data: {
                     username,
                     email,
@@ -49,8 +49,18 @@ export class Student{
      */
 
     async findStudent(email: string){
-        return prisma.Student.findUnique({
+        return prisma.student.findUnique({
             where: { email }
         });
+    }
+
+    /**
+     * Verfying if the password provided is the same as the one in the database
+     * @param password - The provided password
+     * @param hashedPassword - The password in the database
+     * @returns A boolean indicating wether password matches or not
+     */
+    async verfyPassword(password: string, hashedPassword:string){
+        return argon2.verify(hashedPassword, password)
     }
 }

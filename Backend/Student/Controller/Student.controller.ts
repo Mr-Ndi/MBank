@@ -24,3 +24,18 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         console.log(`Error occured ${error.message}`)
     }
 }
+
+export const loginginside = async(req: Request, res:Response):Promise<any> =>{
+    const { email, password } = req.body
+    
+    if( !email || !password ){
+        res.status(400).json({ error: "All fields are required"})
+    }
+    try {
+        const token = await studService.checkingUser(password, email)
+        res.status(200).json({message: "login successfuly", token: `${token}`})
+        return;
+    } catch (error:any) {
+        console.log(`Error occured ${error.message}`)
+    }
+}
