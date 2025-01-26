@@ -1,4 +1,3 @@
-import { error } from "console";
 import { studentService } from "../Service/Student.service";
 import { Request, Response } from "express"
 
