@@ -13,28 +13,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student{
-  id      int   @id @default(autoincremet())
-  email   String  @unique
-  username    String
-  password  String
-  school    String
-  department  String
-  regnumber   Int
+model Student {
+  id         Int        @id @default(autoincrement())
+  email      String     @unique
+  username   String
+  password   String
+  school     String
+  department String
+  regnumber  Int
   document   Document[]
 }
 
 model Document {
-  id    @id @default(autoincremet())
-  school    String
-  Department    String
-  level     Int
-  module  String
-  date    DateTime
-  category    DocumentCategory
-  content String
-  studentId   Int
-  Student     Student     @relation(fields:[studentId], references:[id])
+  id         Int              @id @default(autoincrement())
+  school     String
+  fieldId    String
+  Department String
+  level      Int
+  module     String
+  date       DateTime
+  category   DocumentCategory
+  url        String
+  studentId  Int
+  Student    Student          @relation(fields: [studentId], references: [id])
 }
 
 enum DocumentCategory {
