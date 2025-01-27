@@ -3,7 +3,7 @@ const clientId = "298777195045-nnradv3987p1d80d9so66sp75p3h0n5l.apps.googleuserc
 
 function Logout() {
     const onSuccess = () => {
-        console.log("LOGIN SUCCESS!");
+        console.log("LOGOUT SUCCESS!");
     }
 
     return(

@@ -1,26 +1,32 @@
-import { GoogleLogin } from 'react-google-login';
-const clientId = "298777195045-nnradv3987p1d80d9so66sp75p3h0n5l.apps.googleusercontent.com"
+import { GoogleLogin } from '@react-oauth/google';
+import axiosInstance from '../../Axius/axiosInstance';
 
 function Login() {
-    const onSuccess = (res: any) => {
-        console.log("LOGIN SUCCESS! current user: ",res.profileObj);
-    }
+    const onSuccess = async (credentialResponse: any) => {
+        console.log("LOGIN SUCCESS! Credential Response: ", credentialResponse);
+        
+        const tokenId = credentialResponse.credential;
 
-    const onFailure = (res: any) =>{
-        console.log("LOGIN FAILED! res: ", res)
-    }
-    return(
+        try {
+            const response = await axiosInstance.post('google-log', { token: tokenId });
+            console.log("Response from backend: ", response.data);
+        } catch (error: any) {
+            console.log("Error during sending login request to backend: ", error.message);
+        }
+    };
+
+    const onFailure = () => {
+        console.log("LOGIN FAILED!");
+    };
+
+    return (
         <div id="signInButton">
-        <GoogleLogin
-        clientId={clientId}
-        buttonText="Login"
-        onSuccess={onSuccess}
-        onFailure={onFailure}
-        cookiePolicy={'single_host_origin'}
-        isSignedIn={true}
-        />
-    </div>
-    )
+            <GoogleLogin
+                onSuccess={onSuccess}
+                onError={onFailure}
+            />
+        </div>
+    );
 }
 
-export default Login
+export default Login;
