@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import argon2 from 'argon2'
-import { datacatalog } from 'googleapis/build/src/apis/datacatalog'
 
 const prisma = new PrismaClient()
 

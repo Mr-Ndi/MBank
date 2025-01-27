@@ -1,51 +1,80 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
+import { DocumentCategory } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-
-const { google } = require('googleapis');
-const fs = require('fs');
-
-// Authenticate with Google Drive
-const auth = new google.auth.GoogleAuth({
-  keyFile: 'path/to/your-service-account-key.json', // Replace with your service account key file
-  scopes: ['https://www.googleapis.com/auth/drive.file'],
-});
-
-const drive = google.drive({ version: 'v3', auth });
-
-async function uploadImage(filePath: string, fileName: string) {
-  const fileMetadata = { name: fileName };
-  const media = { mimeType: 'image/jpeg', body: fs.createReadStream(filePath) };
-
-  const response = await drive.files.create({
-    resource: fileMetadata,
-    media: media,
-    fields: 'id', // Only retrieve the file ID
-  });
-
-  console.log(`Image uploaded with ID: ${response.data.id}`);
-  return response.data.id; // Save this ID in the database
-}
-
-uploadImage('./example.jpg', 'example.jpg').catch(console.error);
-
-
-async function generatePublicLink(fileId: number) {
-    await drive.permissions.create({
-      fileId: fileId,
-      requestBody: {
-        role: 'reader', // Allow read-only access
-        type: 'anyone', // Anyone with the link
-      },
-    });
+export class DocumentModel {
+  /**
+     * Save a document's metadata to the database.
+     */
+  async saveDocument(
+    school: string,
+    fieldId: string,
+    department: string,
+    level: number,
+    module: string,
+    category: string,
+    url: string,
+    studentId: number
+  ) {
+    try {
+      if (!Object.values(DocumentCategory).includes(category as DocumentCategory)) {
+        throw new Error(`Invalid category value: ${category}. Must be one of: ${Object.values(DocumentCategory).join(", ")}`);
+      }
   
-    const file = await drive.files.get({
-      fileId: fileId,
-      fields: 'webViewLink, webContentLink',
-    });
-  
-    console.log('Public Link:', file.data.webContentLink);
-    return file.data.webContentLink; // Return the public link
+      return await prisma.document.create({
+        data: {
+          school,
+          fieldId,
+          Department: department,
+          level,
+          module,
+          date: new Date(),
+          category: category as DocumentCategory,
+          url,
+          studentId,
+        },
+      });
+    } catch (error: any) {
+      console.error(`Error saving document: ${error.message}`);
+      throw new Error("Failed to save document.");
+    }
   }
   
+  /**
+    * Retrieve documents by department and level.
+    */
+  async getDocumentsByDepartmentAndLevel(department: string, level: number) {
+      try {
+          return await prisma.document.findMany({
+              where: {
+                  Department: department,
+                  level,
+              },
+          });
+      } catch (error: any) {
+          console.error(`Error fetching documents: ${error.message}`);
+          throw new Error("Failed to retrieve documents.");
+      } finally {
+          await prisma.$disconnect();
+      }
+  }
+
+  /**
+   * Retrieve documents by module name.
+   */
+  async getDocumentsByModule(module: string) {
+      try {
+          return await prisma.document.findMany({
+              where: {
+                  module,
+              },
+          });
+      } catch (error: any) {
+          console.error(`Error fetching documents: ${error.message}`);
+          throw new Error("Failed to retrieve documents.");
+      } finally {
+          await prisma.$disconnect();
+      }
+  }
+}
