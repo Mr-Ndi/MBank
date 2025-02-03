@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center p-4">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-gray-900">
-          MBank
+        <img src="/icon2.png" alt="Company Logo" className="h-10 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
