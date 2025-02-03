@@ -6,17 +6,20 @@ import Link from "next/link";
 const Home = () => {
   const slides = [
     {
-      text: "Hey you Welcome to marks bank [MBank]. A game changer website designed to simplify your hustle for marks chasing game.",
+      text: "Have you ever given your best, studied day and night, only to find yourself struggling with marks? Do you feel like no matter how much effort you put in, you're still stuck at the lower level? You're not alone!",
       img: "/emoji1.png",
+      position: "left"
     },
     {
-      text: "Simply here we provide variety past copies, those are not only cats and quizzes but also the exams so have fun around.",
+      text: "Maybe it's not about how hard you study but how you study! The methods you use might be the reason behind it. But don’t panic! MBank or Igicupuri is here to simplify things for you. Just take it easy we got you covered!",
       img: "/emoji2.png",
+      position: "center"
     },
     {
-      text: "Hey you Welcome to marks bank [MBank]. A game changer website designed to simplify your hustle for marks chasing game.",
+      text: "Success is simpler than you think! With MBank, all you have to do is browse through past copies, ensuring you stay on track while revising. Just click ‘Get Copies’ to access materials. And remember, sharing is caring! Click 'Upload' to help others too!",
       img: "/emoji3.png",
-    },
+      position: "right"
+    }
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -30,49 +33,56 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-blue-500 to-white flex flex-col">
-      {/* Navigation Bar */}
-      <nav className="w-full bg-gradient-to-r from-white to-blue-400 py-4 px-10 flex justify-between items-center shadow-md">
-        <div className="text-lg font-bold">Home</div>
-        <div className="flex space-x-8 font-semibold">
-          <a href="#" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">About us</a>
-          <a href="#" className="hover:underline">Contact us</a>
-        </div>
-        <div className="font-bold">Login</div>
-      </nav>
-
+    <div className="w-full h-screen bg-gradient-to-b from-blue-500 to-white flex flex-col justify-center items-center px-10">
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-10">
+      <div className="relative flex flex-col items-center w-full max-w-5xl">
+        {/* Center Image - Move Above Message */}
+        {slides[currentSlide].position === "center" && (
+          <img
+            src={slides[currentSlide].img}
+            alt="Emoji"
+            className="w-80 h-80 object-contain absolute top-[-150px] left-1/2 -translate-x-1/2 z-10"
+          />
+        )}
+
+        {/* Message Box - Add margin to push it down */}
         <motion.div
           key={currentSlide}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          className="max-w-5xl w-full flex items-center justify-between bg-white p-6 rounded-2xl shadow-lg"
+          className="text-lg font-semibold text-gray-800 text-center max-w-md mt-40"
         >
-          {/* Text Section */}
-          <div className="max-w-md">
-            <p className="text-lg font-semibold text-gray-800">{slides[currentSlide].text}</p>
-            <div className="mt-6 flex space-x-4">
-              <Link href="/browse">
-                <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Get copies</p>
-              </Link>
-              <Link href="/uploading">
-                <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Upload a copy</p>
-              </Link>
-            </div>
-          </div>
-
-          {/* Image Section */}
-          <div className="w-1/2 flex justify-end">
-            <img
-              src={slides[currentSlide].img}
-              alt="Emoji"
-              className="w-60 h-60 object-contain"
-            />
-          </div>
+          {slides[currentSlide].text}
         </motion.div>
+
+        {/* Left Image */}
+        {slides[currentSlide].position === "left" && (
+          <img
+            src={slides[currentSlide].img}
+            alt="Emoji"
+            className="w-80 h-80 object-contain absolute left-10 -ml-24"
+          />
+        )}
+
+        {/* Right Image */}
+        {slides[currentSlide].position === "right" && (
+          <img
+            src={slides[currentSlide].img}
+            alt="Emoji"
+            className="w-80 h-80 object-contain absolute right-10 -mr-24"
+          />
+        )}
+      </div>
+
+      {/* Buttons */}
+      <div className="mt-6 flex space-x-4">
+        <Link href="/browse">
+          <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Get copies</p>
+        </Link>
+        <Link href="/uploading">
+          <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Upload a copy</p>
+        </Link>
       </div>
     </div>
   );
