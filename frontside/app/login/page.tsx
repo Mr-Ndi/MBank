@@ -1,9 +1,23 @@
 "use client";
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      alert("Please fill in all fields!");
+      return;
+    }
+    console.log("Logging in with:", email, password);
+    // Handle authentication logic here
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-500 to-blue-200">
@@ -13,13 +27,18 @@ const LoginPage = () => {
           <h2 className="text-2xl font-semibold text-gray-600 border-b-2 border-gray-400 pb-1">
             Login
           </h2>
-          <h2 className="text-2xl text-gray-400">Sign up</h2>
+          <h2
+            className="text-2xl text-gray-400 cursor-pointer hover:text-gray-600 transition"
+            onClick={() => router.push("/signup")} // Navigate to sign-up page
+          >
+            Sign up
+          </h2>
         </div>
 
         {/* Google Login Button */}
-        <button className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 p-2 rounded-md hover:bg-gray-100 transition">
-          <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
-          Continue Google
+        <button className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 p-3 rounded-md hover:bg-gray-100 transition">
+          <img src="/google-icon.png" alt="Google" className="w-5 h-5" />
+          Continue with Google
         </button>
 
         {/* OR Divider */}
@@ -30,22 +49,36 @@ const LoginPage = () => {
         </div>
 
         {/* Login Form */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Email Input */}
           <div className="relative">
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+              required
             />
           </div>
 
           {/* Password Input */}
           <div className="relative">
+            <label htmlFor="password" className="sr-only">
+              Password
+            </label>
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300 pr-10"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 pr-10"
+              required
             />
             <button
               type="button"

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +25,12 @@ export default function Signup() {
       <div className="bg-white p-8 rounded-2xl shadow-lg w-[450px]">
         {/* Log in | Sign up Header */}
         <div className="flex justify-between mb-6">
-          <h2 className="text-2xl text-gray-400">Log in</h2>
+          <h2
+            className="text-2xl text-gray-400 cursor-pointer hover:text-gray-600 transition"
+            onClick={() => router.push("/login")} // Navigate to login page
+          >
+            Log in
+          </h2>
           <h2 className="text-2xl font-semibold text-gray-600 border-b-2 border-gray-400 pb-1">
             Sign up
           </h2>
@@ -31,8 +38,8 @@ export default function Signup() {
 
         {/* Google Signup Button */}
         <button className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-700 p-2 rounded-md hover:bg-gray-100 transition">
-          <img src="/google.svg" alt="Google" className="w-5 h-5" />
-          Continue Google
+          <img src="/google-icon.png" alt="Google" className="w-5 h-5" />
+          Continue with Google
         </button>
 
         {/* OR Divider */}
