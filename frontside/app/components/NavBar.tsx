@@ -16,10 +16,15 @@ const Navbar = () => {
   return (
     <nav className="bg-gradient-to-r from-blue-200 to-blue-500 shadow-md fixed top-0 w-full z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
-        {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-gray-900">
-        <img src="/icon2.png" alt="Company Logo" className="h-10 w-auto" />
-        </Link>
+        {/* Logo & Get App Button */}
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-xl font-bold text-gray-900">
+            <img src="/icon2.png" alt="Company Logo" className="h-10 w-auto" />
+          </Link>
+          <button className="hidden md:block bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700">
+            Get App
+          </button>
+        </div>
 
         {/* Desktop Nav */}
         <ul className="hidden md:flex space-x-8 font-semibold text-gray-900">
@@ -50,8 +55,16 @@ const Navbar = () => {
           <li><Link href="/contact" className="block py-2" onClick={() => setIsOpen(false)}>Contact Us</Link></li>
           <li>
             <button
+              className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              onClick={() => setIsOpen(false)}
+            >
+              Get App
+            </button>
+          </li>
+          <li>
+            <button
               onClick={handleLoginClick}
-              className="block py-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Login
             </button>
