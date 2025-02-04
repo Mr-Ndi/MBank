@@ -14,6 +14,14 @@ export default function BrowsePage() {
   const [page, setPage] = useState(1);
   const [downloading, setDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const [filteredData, setFilteredData] = useState(mockData);
+
+  const handleSearch = () => {
+    const results = mockData.filter(item =>
+      item.moduleName.toLowerCase().includes(moduleName.toLowerCase())
+    );
+    setFilteredData(results);
+  };
 
   const handleDownload = () => {
     setDownloading(true);
@@ -28,7 +36,7 @@ export default function BrowsePage() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-b from-blue-400 to-blue-100 py-10">
-      <h2 className="text-3xl font-bold mb-6 text-center">
+      <h2 className="text-3xl font-bold mb-6 text-center mt-10">
         Describe the copies that you need to access
       </h2>
 
@@ -38,6 +46,7 @@ export default function BrowsePage() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           className="border p-2 rounded"
+          disabled={!moduleName || filteredData.length === 0}
         >
           <option>Select the category</option>
           <option>Quiz</option>
@@ -54,10 +63,18 @@ export default function BrowsePage() {
         />
 
         {/* Search Button */}
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        <button 
+          onClick={handleSearch} 
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
           Search
         </button>
       </div>
+
+      {/* No Results Message */}
+      {filteredData.length === 0 && (
+        <p className="text-red-500 font-semibold">Search for something else</p>
+      )}
 
       {/* Download Progress Bar & Alert */}
       {downloading && (
@@ -75,8 +92,8 @@ export default function BrowsePage() {
       )}
 
       {/* Grid Display */}
-      <div className="grid grid-cols-3 gap-6">
-        {mockData.map((item, index) => (
+      <div className="grid grid-cols-4 gap-6">
+        {filteredData.map((item, index) => (
           <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-lg w-64">
             <div className="h-24 bg-gray-400 rounded mb-4"></div>
             <div className="flex justify-between mb-2">
