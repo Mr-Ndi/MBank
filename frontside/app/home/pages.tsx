@@ -2,90 +2,97 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const Home = () => {
-  const slides = [
-    {
-      text: "Have you ever given your best, studied day and night, only to find yourself struggling with marks? Do you feel like no matter how much effort you put in, you're still stuck at the lower level? You're not alone!",
-      img: "/emoji1.png",
-      position: "left"
-    },
-    {
-      text: "Maybe it's not about how hard you study but how you study! The methods you use might be the reason behind it. But don’t panic! MBank or Igicupuri is here to simplify things for you. Just take it easy we got you covered!",
-      img: "/emoji2.png",
-      position: "center"
-    },
-    {
-      text: "Success is simpler than you think! With MBank, all you have to do is browse through past copies, ensuring you stay on track while revising. Just click ‘Get Copies’ to access materials. And remember, sharing is caring! Click 'Upload' to help others too!",
-      img: "/emoji3.png",
-      position: "right"
-    }
-  ];
+const slides = [
+  {
+    text: "Have you ever given your best, studied day and night, only to find yourself struggling with marks? You're not alone!",
+    img: "/emoji1.png",
+    position: "left"
+  },
+  {
+    text: "Maybe it's not about how hard you study but how you study! MBank or Igicupuri is here to simplify things for you.",
+    img: "/emoji2.png",
+    position: "center"
+  },
+  {
+    text: "Success is simpler than you think! Browse through past copies, stay on track, and share with others too!",
+    img: "/emoji3.png",
+    position: "right"
+  }
+];
 
+export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div className="w-full h-screen bg-gradient-to-b from-blue-500 to-white flex flex-col justify-center items-center px-10">
-      {/* Main Content */}
-      <div className="relative flex flex-col items-center w-full max-w-5xl">
-        {/* Center Image - Move Above Message */}
-        {slides[currentSlide].position === "center" && (
-          <img
-            src={slides[currentSlide].img}
-            alt="Emoji"
-            className="w-80 h-80 object-contain absolute top-[-150px] left-1/2 -translate-x-1/2 z-10"
-          />
-        )}
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
 
-        {/* Message Box - Add margin to push it down */}
-        <motion.div
+  return (
+    <div className="w-full min-h-screen bg-gradient-to-b from-blue-600 to-white flex flex-col items-center justify-center px-6 py-12">
+      {/* Main Content */}
+      <div className="relative flex flex-col items-center w-full max-w-5xl text-center">
+        {/* Slide Image */}
+        <motion.img
           key={currentSlide}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          className="text-lg font-semibold text-gray-800 text-center max-w-md mt-40"
+          src={slides[currentSlide].img}
+          alt="Slide image"
+          className="w-64 h-64 object-contain mb-6"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.5 }}
+        />
+
+        {/* Slide Text */}
+        <motion.p
+          key={currentSlide + "_text"}
+          className="text-xl font-semibold text-gray-800 max-w-lg"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.5 }}
         >
           {slides[currentSlide].text}
-        </motion.div>
+        </motion.p>
 
-        {/* Left Image */}
-        {slides[currentSlide].position === "left" && (
-          <img
-            src={slides[currentSlide].img}
-            alt="Emoji"
-            className="w-80 h-80 object-contain absolute left-10 -ml-24"
-          />
-        )}
-
-        {/* Right Image */}
-        {slides[currentSlide].position === "right" && (
-          <img
-            src={slides[currentSlide].img}
-            alt="Emoji"
-            className="w-80 h-80 object-contain absolute right-10 -mr-24"
-          />
-        )}
+        {/* Navigation Arrows */}
+        <div className="absolute inset-0 flex justify-between items-center w-full px-6">
+          <button onClick={prevSlide} className="bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition">
+            <ChevronLeft size={24} />
+          </button>
+          <button onClick={nextSlide} className="bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition">
+            <ChevronRight size={24} />
+          </button>
+        </div>
       </div>
 
-      {/* Buttons */}
-      <div className="mt-6 flex space-x-4">
+      {/* Call to Actions */}
+      <div className="mt-8 flex space-x-4">
         <Link href="/browse">
-          <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Get copies</p>
+          <p className="bg-indigo-600 text-white py-3 px-6 rounded-lg shadow-lg text-lg font-semibold hover:bg-indigo-700 transition cursor-pointer">Get Copies</p>
         </Link>
         <Link href="/uploading">
-          <p className="bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md cursor-pointer">Upload a copy</p>
+          <p className="bg-indigo-600 text-white py-3 px-6 rounded-lg shadow-lg text-lg font-semibold hover:bg-indigo-700 transition cursor-pointer">Upload a Copy</p>
         </Link>
+      </div>
+
+      {/* Slide Indicators */}
+      <div className="flex space-x-2 mt-6">
+        {slides.map((_, index) => (
+          <div
+            key={index}
+            className={`w-3 h-3 rounded-full ${currentSlide === index ? "bg-indigo-600" : "bg-gray-300"}`}
+          ></div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default Home;
+}

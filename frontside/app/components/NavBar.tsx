@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation"; 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter(); 
 
   const handleLoginClick = () => {
-    setIsOpen(false); // Close the mobile menu (if open)
-    router.push("/login"); // Navigate to the login page
+    setIsOpen(false); 
+    router.push("/login"); 
   };
 
   return (
