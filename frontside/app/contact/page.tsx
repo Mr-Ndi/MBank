@@ -1,5 +1,6 @@
 "use client";
-import { Mail, Phone, MapPin, Send, Facebook, Twitter, Linkedin } from "lucide-react";
+import Link from "next/link";
+import { Mail, Phone, MapPin, Send, Github, Twitter, Linkedin } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactUs() {
@@ -18,7 +19,7 @@ export default function ContactUs() {
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-gradient-to-b from-blue-400 to-white p-10">
       {/* Header Section */}
-      <h1 className="text-4xl font-bold text-center mb-6 text-gray-900">Contact Us</h1>
+      <h1 className="text-4xl font-bold text-center mb-6 text-gray-900 mt-10">Contact Us</h1>
       <p className="text-lg text-gray-700 max-w-2xl text-center">
         Have a question or feedback? Reach out to us, and we’ll get back to you as soon as possible.
       </p>
@@ -67,25 +68,25 @@ export default function ContactUs() {
         <div className="flex flex-col items-center">
           <Phone size={24} className="text-blue-600" />
           <h3 className="text-lg font-semibold mt-2">Call Us</h3>
-          <p className="text-gray-700">+1 234 567 890</p>
+          <p className="text-gray-700">+250 791 287 640</p>
         </div>
         <div className="flex flex-col items-center">
           <Mail size={24} className="text-blue-600" />
           <h3 className="text-lg font-semibold mt-2">Email Us</h3>
-          <p className="text-gray-700">support@example.com</p>
+          <p className="text-gray-700">ndiramiyeninshuti1@gmail.com | onlythenotes@gmail.com</p>
         </div>
         <div className="flex flex-col items-center">
           <MapPin size={24} className="text-blue-600" />
           <h3 className="text-lg font-semibold mt-2">Visit Us</h3>
-          <p className="text-gray-700">123 Main Street, City, Country</p>
+          <p className="text-gray-700">KN 123st, Kigali, Rwanda</p>
         </div>
       </div>
 
       {/* Social Media Links */}
       <div className="mt-12 flex gap-6">
-        <a href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
-          <Facebook size={24} />
-        </a>
+        <Link href="https://github.com/Mr-Ndi" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+          <Github size={24} />
+        </Link>
         <a href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Twitter size={24} />
         </a>
