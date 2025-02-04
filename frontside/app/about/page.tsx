@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Users, Briefcase, Globe, User, Star } from "lucide-react";
+import { Users, Briefcase, Globe, User } from "lucide-react";
 
 const team: any = [];
 

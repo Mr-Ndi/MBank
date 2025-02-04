@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Send, Github, Twitter, Linkedin } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, Send, Github, Linkedin } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactUs() {
@@ -84,15 +85,15 @@ export default function ContactUs() {
 
       {/* Social Media Links */}
       <div className="mt-12 flex gap-6">
-        <Link href="https://github.com/Mr-Ndi" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+        <Link href="https://github.com/Mr-Ndi" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Github size={24} />
         </Link>
-        <a href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
-          <Twitter size={24} />
-        </a>
-        <a href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+        <Link href="https://mr-ndi.github.io/Port_web/" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+          <Image src="/icon2.png" alt="Custom Icon" width={24} height={24} />
+        </Link>
+        <Link href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Linkedin size={24} />
-        </a>
+        </Link>
       </div>
     </div>
   );
