@@ -43,3 +43,26 @@ enum DocumentCategory {
   CAT
   EXAM
 }
+model Report {
+  id         Int      @id @default(autoincrement())
+  reason     ReportReason
+  status     ReportStatus @default(PENDING)
+  studentId  Int
+  documentId Int
+  Student    Student  @relation(fields: [studentId], references: [id])
+  Document   Document @relation(fields: [documentId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+enum ReportReason {
+  INAPPROPRIATE
+  DUPLICATE
+  COPYRIGHT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}
