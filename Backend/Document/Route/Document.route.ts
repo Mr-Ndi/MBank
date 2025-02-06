@@ -3,12 +3,12 @@ import { uploadDocument, downloadDocument, getDocumentsByDepartmentAndLevel, get
 import multer from "multer";
 
 
-const router = express.Router();
+const documentRouter = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-router.post("/documents/upload", upload.single("file"), uploadDocument);
-router.get("/documents/download", downloadDocument);
-router.get("/documents/by-department-level", getDocumentsByDepartmentAndLevel);
-router.get("/documents/by-module", getDocumentsByModule);
+documentRouter.post("/documents/upload", upload.single("file"), uploadDocument);
+documentRouter.get("/documents/download", downloadDocument);
+documentRouter.get("/documents/by-department-level", getDocumentsByDepartmentAndLevel);
+documentRouter.get("/documents/by-module", getDocumentsByModule);
 
-export default router;
+export default documentRouter;

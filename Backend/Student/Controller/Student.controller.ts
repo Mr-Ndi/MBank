@@ -1,50 +1,46 @@
 import { studentService } from "../Service/Student.service";
-import { Request, Response } from "express"
-import { OAuth2Client } from 'google-auth-library';
+import { Request, Response } from "express";
+import { OAuth2Client } from "google-auth-library";
 import { Student } from "../Model/Student.model";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
-
-const studService = new studentService()
-const students = new Student
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID
-const oauthClient = new OAuth2Client(CLIENT_ID)
+const studService = new studentService();
+const students = new Student();
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+const oauthClient = new OAuth2Client(CLIENT_ID);
 
 export const register = async (req: Request, res: Response): Promise<any> => {
-    const {
-        username,
-        email,
-        password,
-        school,
-        department,
-        regnumber
-    } = req.body
-    if (! username || ! email || !password || !school || ! department || !regnumber) {
-        res.status(400).json({error: "All fields are required"})
-    }
-    try {
-        const message = await studService.newAccount(username, email, password, school, department, regnumber )
-        res.status(201).json({message:`${message}`});
-        return;
-    } catch (error: any) {
-        console.log(`Error occured ${error.message}`)
-    }
-}
+    const { username, email, password, school, department, regnumber } = req.body;
 
-export const loginginside = async(req: Request, res:Response):Promise<any> =>{
-    const { email, password } = req.body
-    
-    if( !email || !password ){
-        res.status(400).json({ error: "All fields are required"})
+    if (!username || !email || !password || !school || !department || !regnumber) {
+        return res.status(400).json({ error: "All fields are required" });
     }
+
     try {
-        const token = await studService.checkingUser(password, email)
-        res.status(200).json({message: "login successfuly", token: `${token}`})
-        return;
-    } catch (error:any) {
-        console.log(`Error occured ${error.message}`)
+        const message = await studService.newAccount(username, email, password, school, department, regnumber);
+        return res.status(201).json({ message: `${message}` });
+    } catch (error: any) {
+        console.error(`Error occurred: ${error.message}`);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
+
+export const loginginside = async (req: Request, res: Response): Promise<any> => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+        const token = await studService.checkingUser(password, email);
+        return res.status(200).json({ message: "Login successful", token: `${token}` });
+    } catch (error: any) {
+        console.error(`Error occurred: ${error.message}`);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 export const googleLogin = async (req: Request, res: Response): Promise<any> => {
     const { token } = req.body;
 
@@ -72,15 +68,18 @@ export const googleLogin = async (req: Request, res: Response): Promise<any> => 
         if (!Stud) {
             return res.status(500).json({ error: "Failed to create a new student account" });
         }
-        const jwtSecret = process.env.JWT_SECREAT;
+
+        const jwtSecret = process.env.JWT_SECRET;
         if (!jwtSecret) {
             throw new Error("JWT secret is not defined");
         }
+
         const jwtToken = jwt.sign(
             { studentId: Stud.id, email: Stud.email },
             jwtSecret,
             { expiresIn: "1h" }
         );
+
         return res.status(200).json({
             message: "Login successful",
             token: jwtToken,

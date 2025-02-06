@@ -8,3 +8,6 @@ const studentRouter = express.Router()
 studentRouter.post('/signup', validateRequest(registerSchema), register)
 studentRouter.post('/login', validateRequest(loginSchema), loginginside)
 studentRouter.post('/google-login', googleLogin);
+
+
+export default studentRouter
