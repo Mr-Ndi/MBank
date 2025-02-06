@@ -41,3 +41,5 @@ coverage/
 
 # Optional npm cache
 .npm/
+mbank-449104-a67e737ee129.json
+docker-compose.override.yml

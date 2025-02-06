@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
+    "@types/dotenv": "^6.1.1",
+    "@types/mime-types": "^2.1.4",
     "argon2": "^0.41.1",
     "googleapis": "^144.0.0"
   }

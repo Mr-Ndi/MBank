@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DocumentService } from "../Service/Document.servive";
+import { DocumentService } from "../Service/Document.service";
 
 const documentService = new DocumentService();
 
@@ -9,27 +9,26 @@ const documentService = new DocumentService();
 export const getDocumentsByDepartmentAndLevel = async (req: Request, res: Response): Promise<any> => {
     const { department, level } = req.query;
 
-    if (!department || !level) {
-        return res.status(400).json({ error: "Department and level are required." });
+    if (!department || !level || isNaN(Number(level))) {
+        return res.status(400).json({ error: "Valid department and level are required." });
     }
 
     try {
         const documents = await documentService.getDocumentsByDepartmentAndLevel(
             department as string,
-            parseInt(level as string, 10)
+            Number(level)
         );
 
-        res.status(200).json({ documents });
+        return res.status(200).json({ documents });
     } catch (error: any) {
         console.error(`Error fetching documents: ${error.message}`);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: "Failed to fetch documents." });
     }
 };
 
 /**
  * Get documents by module.
  */
-
 export const getDocumentsByModule = async (req: Request, res: Response): Promise<any> => {
     const { module } = req.query;
 
@@ -39,30 +38,26 @@ export const getDocumentsByModule = async (req: Request, res: Response): Promise
 
     try {
         const documents = await documentService.getDocumentsByModule(module as string);
-        res.status(200).json({ documents });
+        return res.status(200).json({ documents });
     } catch (error: any) {
         console.error(`Error fetching documents: ${error.message}`);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: "Failed to fetch documents." });
     }
-}
-    /**
+};
+
+/**
  * Upload a document.
  */
 export const uploadDocument = async (req: Request, res: Response): Promise<any> => {
-    const {
-        school,
-        fieldId,
-        department,
-        level,
-        module,
-        category,
-        studentId,
-    } = req.body;
+    const { school, fieldId, department, level, module, category, studentId } = req.body;
+    const file = req.file; // Assuming Multer is used for file handling
 
-    const file = req.file; // Assuming file is uploaded using a middleware like multer
+    if (!file) {
+        return res.status(400).json({ error: "File is required." });
+    }
 
-    if (!file || !school || !fieldId || !department || !level || !module || !category || !studentId) {
-        return res.status(400).json({ error: "All fields and file are required." });
+    if (!school || !fieldId || !department || !level || !module || !category || !studentId || isNaN(Number(level)) || isNaN(Number(studentId))) {
+        return res.status(400).json({ error: "All fields are required and must be valid." });
     }
 
     try {
@@ -72,16 +67,16 @@ export const uploadDocument = async (req: Request, res: Response): Promise<any> 
             school,
             fieldId,
             department,
-            parseInt(level, 10),
+            Number(level),
             module,
             category,
-            parseInt(studentId, 10)
+            Number(studentId)
         );
 
-        res.status(201).json({ message: "Document uploaded successfully", document: savedDocument });
+        return res.status(201).json({ message: "Document uploaded successfully", document: savedDocument });
     } catch (error: any) {
         console.error(`Error uploading document: ${error.message}`);
-        res.status(500).json({ error: "Failed to upload document." });
+        return res.status(500).json({ error: "Failed to upload document." });
     }
 };
 
@@ -97,9 +92,9 @@ export const downloadDocument = async (req: Request, res: Response): Promise<any
 
     try {
         const { downloadUrl } = await documentService.downloadDocument(url as string);
-        res.status(200).json({ downloadUrl });
+        return res.status(200).json({ downloadUrl });
     } catch (error: any) {
         console.error(`Error downloading document: ${error.message}`);
-        res.status(500).json({ error: "Failed to download document." });
+        return res.status(500).json({ error: "Failed to download document." });
     }
-}
+};
