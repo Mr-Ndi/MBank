@@ -22,20 +22,23 @@ model Student {
   department String
   regnumber  Int
   document   Document[]
+  Report     Report[]
 }
 
 model Document {
-  id         Int              @id @default(autoincrement())
-  school     String
-  fieldId    String
-  Department String
-  level      Int
-  module     String
-  date       DateTime
-  category   DocumentCategory
-  url        String
-  studentId  Int
-  Student    Student          @relation(fields: [studentId], references: [id])
+  id          Int              @id @default(autoincrement())
+  school      String
+  fieldId     String
+  Department  String
+  level       Int
+  module      String
+  date        DateTime
+  category    DocumentCategory
+  url         String
+  studentId   Int
+  Student     Student          @relation(fields: [studentId], references: [id])
+  reportCount Int              @default(0)
+  Report      Report[]
 }
 
 enum DocumentCategory {
@@ -43,15 +46,16 @@ enum DocumentCategory {
   CAT
   EXAM
 }
+
 model Report {
-  id         Int      @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   reason     ReportReason
   status     ReportStatus @default(PENDING)
   studentId  Int
   documentId Int
-  Student    Student  @relation(fields: [studentId], references: [id])
-  Document   Document @relation(fields: [documentId], references: [id])
-  createdAt  DateTime @default(now())
+  Student    Student      @relation(fields: [studentId], references: [id])
+  Document   Document     @relation(fields: [documentId], references: [id])
+  createdAt  DateTime     @default(now())
 }
 
 enum ReportReason {

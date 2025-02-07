@@ -1,13 +1,11 @@
-import { DocumentModel } from "../Model/Document.models";
-import { PrismaClient } from "@prisma/client";
+import { DocumentModel} from "../Model/Document.models";
 import { google } from "googleapis";
 import fs from "fs";
 import mime from "mime-types";
 import dotenv from "dotenv";
-dotenv.config();
 
+dotenv.config();
 const documentModel = new DocumentModel();
-const prisma = new PrismaClient();
 
 // Google Auth Setup
 const auth = new google.auth.GoogleAuth({
@@ -116,6 +114,40 @@ export class DocumentService {
         } catch (error: any) {
             console.error(`Error fetching documents: ${error.message}`);
             throw new Error("Failed to fetch documents.");
+        }
+    }
+
+    /**
+     * Reporting a document.
+     */
+    async reportDocument(
+        documentId: number,
+        studentId: number,
+        reason: string
+    ): Promise<any>{
+        try {
+            // Check if document exists
+            const document = await documentModel.findDocumentById(documentId);
+            if (!document) {
+                throw new Error("Document not found.");
+            }
+    
+            // Validate report reason
+            const validReasons = ["INAPPROPRIATE", "DUPLICATE", "COPYRIGHT", "OTHER"];
+            if (!validReasons.includes(reason.toUpperCase())) {
+                throw new Error("Invalid report reason.");
+            }
+    
+            // Save the new report
+            await documentModel.createReport(documentId, studentId, reason.toUpperCase());
+    
+            // Increment report count in the document
+            await documentModel.incrementReportCount(documentId);
+    
+            return { message: "Document reported successfully." };
+        } catch (error: any) {
+            console.error(`Error reporting document: ${error.message}`);
+            throw new Error("Failed to report document.");
         }
     }
 }
