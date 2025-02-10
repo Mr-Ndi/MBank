@@ -1,9 +1,9 @@
 import express from "express";
 import { getReportedDocuments, deleteReportedDocument } from "../Controller/Kibamba.controllers";
 
-const router = express.Router();
+const AdminRouter = express.Router();
 
-router.get("/reported", getReportedDocuments);
-router.delete("/reported/:documentId", deleteReportedDocument);
+AdminRouter.get("/reported", getReportedDocuments);
+AdminRouter.delete("/reported/:documentId", deleteReportedDocument);
 
-export default router;
+export default AdminRouter;
