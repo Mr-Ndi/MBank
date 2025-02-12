@@ -1,13 +1,17 @@
 {
-    "compilerOptions": {
-      "module": "ES2020",
-      "moduleResolution": "Node",
-      "outDir": "./dist",
-      "esModuleInterop": true,
-      "sourceMap": true,
-      "target": "es2017"
-    },
-    "include": ["index.ts"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
