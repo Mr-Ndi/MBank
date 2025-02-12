@@ -11,6 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.send("Hello! Your Marks Bank backend is running.");
+});
 app.use("/student", studentRouter);
 app.use("/document", documentRouter);
 app.use("/admin", AdminRouter)
