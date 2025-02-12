@@ -1,7 +1,7 @@
-import { studentService } from "../Service/Student.service";
+import { studentService } from "../Service/Student.service.js";
 import { Request, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
-import { Student } from "../Model/Student.model";
+import { Student } from "../Model/Student.model.js";
 import jwt from "jsonwebtoken";
 
 const studService = new studentService();

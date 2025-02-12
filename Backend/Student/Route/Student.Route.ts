@@ -1,7 +1,7 @@
-import { googleLogin, loginginside, register } from "../Controller/Student.controller.ts";  
+import { googleLogin, loginginside, register } from "../Controller/Student.controller.js";  
 import express from "express";  
-import { validateRequest } from "../Middleware/validationMiddleware.ts";  
-import { loginSchema, registerSchema } from "../Middleware/validationSchemas.ts";  
+import { validateRequest } from "../Middleware/validationMiddleware.js";  
+import { loginSchema, registerSchema } from "../Middleware/validationSchemas.js";  
 
 const studentRouter = express.Router();
 

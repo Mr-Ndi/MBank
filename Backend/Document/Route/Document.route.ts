@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadDocument, downloadDocument, getDocumentsByDepartmentAndLevel, getDocumentsByModule } from "../Controllers/Document.controller";
+import { uploadDocument, downloadDocument, getDocumentsByDepartmentAndLevel, getDocumentsByModule } from "../Controllers/Document.controller.js";
 import multer from "multer";
 
 

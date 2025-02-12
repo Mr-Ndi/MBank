@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DocumentService } from "../Service/Document.service";
+import { DocumentService } from "../Service/Document.service.js";
 import fs from "fs";
 
 const documentService = new DocumentService();

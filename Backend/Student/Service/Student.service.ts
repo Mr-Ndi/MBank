@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Student } from "../Model/Student.model";
+import { Student } from "../Model/Student.model.js";
 
 const studentModel = new Student();
 export class studentService{

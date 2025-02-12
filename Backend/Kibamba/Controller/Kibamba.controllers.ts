@@ -1,6 +1,6 @@
 // Kibamba.controller.ts - Handles reported document actions
 import { Request, Response } from "express";
-import { DocumentModel } from "../../Document/Model/Document.models";
+import { DocumentModel } from "../../Document/Model/Document.models.js";
 
 const documentModel = new DocumentModel();
 

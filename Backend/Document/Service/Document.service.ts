@@ -1,4 +1,4 @@
-import { DocumentModel} from "../Model/Document.models";
+import { DocumentModel} from "../Model/Document.models.js";
 import { google } from "googleapis";
 import fs from "fs";
 import mime from "mime-types";
