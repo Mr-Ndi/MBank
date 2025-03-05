@@ -2,32 +2,31 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { login, googleLogin } from "../utils/api"; // Import API helper
+import { login, googleLogin } from "../utils/api";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
-  // Handle Normal Login
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const data = await login(email, password);
-      localStorage.setItem("token", data.token); // Save token
-      router.push("/dashboard"); // Redirect
+      localStorage.setItem("token", data.token);
+      router.push("/");
     } catch (err: any) {
       alert(err.message);
     }
   };
 
-  // Handle Google Login
+ 
   const handleGoogleLogin = async () => {
     try {
       const data = await googleLogin();
-      localStorage.setItem("token", data.token); // Save token
-      router.push("/dashboard"); // Redirect
+      localStorage.setItem("token", data.token);
+      router.push("/");
     } catch (err: any) {
       alert(err.message);
     }

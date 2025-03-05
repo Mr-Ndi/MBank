@@ -1,42 +1,38 @@
-export const API_URL = "http://localhost:5000/api/students"; // Change this to your backend URL
+import api from "./axiosInstance";
 
-// Function for user signup
-export const signup = async (email: string, password: string) => {
-  const res = await fetch(`${API_URL}/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+interface LoginResponse {
+  token: string;
+}
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Signup failed");
-
-  return data; // Return token or user data
+export const signup = async ( regnumber: number, email: string, password: string, username: string, school: string, department: string) => {
+  try {
+    const response = await api.post("/students/signup", { email, password });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Signup failed");
+  }
 };
 
-// Function for user login
-export const login = async (email: string, password: string) => {
-  const res = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
+  try {
+    const response = await api.post("/student/login", { email, password });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Login failed");
+    if (!response.data?.token) {
+      throw new Error("No token received from the server.");
+    }
 
-  return data;
+    return response.data.token;
+  } catch (error: any) {
+    console.error("Login error:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Login failed. Please try again.");
+  }
 };
 
-// Function for Google login
 export const googleLogin = async () => {
-  const res = await fetch(`${API_URL}/google-login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Google login failed");
-
-  return data;
+  try {
+    const response = await api.post("/api/students/google-login");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Google login failed");
+  }
 };

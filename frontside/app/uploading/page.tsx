@@ -36,7 +36,7 @@ export default function UploadPage() {
     }
     console.log("Uploading:", { school, category, department, level, moduleName, file });
     setUploadSuccess(true);
-    setTimeout(() => setUploadSuccess(false), 3000); // Hide message after 3 sec
+    setTimeout(() => setUploadSuccess(false), 3000);
   };
 
   return (
@@ -64,7 +64,7 @@ export default function UploadPage() {
               value={school}
               onChange={(e) => {
                 setSchool(e.target.value);
-                setDepartment(""); // Reset department when school changes
+                setDepartment("");
               }}
               className="border p-2 rounded"
             >
@@ -89,7 +89,7 @@ export default function UploadPage() {
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
               className="border p-2 rounded"
-              disabled={!school} // Disable if no school selected
+              disabled={!school}
             >
               <option value="">Select the department</option>
               {school &&
