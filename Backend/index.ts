@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import morgan from "morgan"
 import studentRouter from "./Student/Route/Student.Route.js";
 import documentRouter from "./Document/Route/Document.route.js";
 import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
@@ -9,6 +10,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+app.use(morgan("tiny"));
 app.use(express.json());
 
 app.get("/", (req, res) => {

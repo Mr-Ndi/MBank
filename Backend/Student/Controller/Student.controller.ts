@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 const studService = new studentService();
 const students = new Student();
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+const JWT_SECRET = process.env.JWT_SECRET!;
 const oauthClient = new OAuth2Client(CLIENT_ID);
 
 export const register = async (req: Request, res: Response): Promise<any> => {
@@ -61,7 +62,9 @@ export const googleLogin = async (req: Request, res: Response): Promise<any> => 
 
         const { email, name } = payload;
         let Stud = await students.findStudent(email!);
+
         if (!Stud) {
+            console.log("User not found, creating a new account...");
             Stud = await studService.newAccount(name!, email!, "google-auth", "", "", 0);
         }
 
@@ -69,14 +72,9 @@ export const googleLogin = async (req: Request, res: Response): Promise<any> => 
             return res.status(500).json({ error: "Failed to create a new student account" });
         }
 
-        const jwtSecret = process.env.JWT_SECRET;
-        if (!jwtSecret) {
-            throw new Error("JWT secret is not defined");
-        }
-
         const jwtToken = jwt.sign(
             { studentId: Stud.id, email: Stud.email },
-            jwtSecret,
+            JWT_SECRET,
             { expiresIn: "1h" }
         );
 

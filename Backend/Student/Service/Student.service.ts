@@ -34,6 +34,7 @@ export class studentService{
                 regnumber
             )
             console.log( "user registered" )
+            return("User registered successfully !")
     }
 
     /**

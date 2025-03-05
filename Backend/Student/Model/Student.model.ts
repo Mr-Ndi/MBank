@@ -30,7 +30,7 @@ export class Student{
                     password: hashedPassword,
                     school,
                     department,
-                    regnumber
+                    regnumber: Number(regnumber) 
                 }
         })
         } catch (error:any) {
