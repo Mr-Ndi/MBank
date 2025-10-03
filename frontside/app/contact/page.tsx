@@ -88,10 +88,10 @@ export default function ContactUs() {
         <Link href="https://github.com/Mr-Ndi" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Github size={24} />
         </Link>
-        <Link href="https://mr-ndi.github.io/Port_web/" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+        <Link href="https://me-five-iota.vercel.app/" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Image src="/icon2.png" alt="Custom Icon" width={24} height={24} />
         </Link>
-        <Link href="#" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
+        <Link href="https://www.linkedin.com/in/ndi/" target="_blank" className="p-3 bg-white border rounded-full shadow hover:bg-gray-200 transition">
           <Linkedin size={24} />
         </Link>
       </div>
