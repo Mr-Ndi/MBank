@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan"
-import studentRouter from "./Student/Route/Student.Route.js";
-import documentRouter from "./Document/Route/Document.route.js";
+import studentRouter from "./src/Student/Route/Student.Route.js";
+import documentRouter from "./src/Document/Route/Document.route.js";
+import { swaggerSpec, swaggerUi } from "./src/config/swagger.config.js";
 // import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send("Hello! Your Marks Bank backend is running.");
 });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/student", studentRouter);
 app.use("/document", documentRouter);
 // app.use("/admin", AdminRouter)
