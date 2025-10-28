@@ -10,7 +10,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * @swagger
- * /documents/upload:
+ * /document/upload:
  *   post:
  *     summary: Upload a document
  *     description: >
