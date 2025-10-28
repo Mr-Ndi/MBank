@@ -28,23 +28,26 @@ model Student {
 model Document {
   id          Int              @id @default(autoincrement())
   school      String
-  fieldId     String
-  Department  String
+  moduleCode    String
+  department  String
   level       Int
-  module      String
+  moduleName      String
   date        DateTime
   category    DocumentCategory
   url         String
-  studentId   Int
-  Student     Student          @relation(fields: [studentId], references: [id])
+  approved    Boolean          @default(false)
+  uploadedAt  DateTime         @default(now())
+  studentId   Int?
+  Student     Student?          @relation(fields: [studentId], references: [id])
   reportCount Int              @default(0)
   Report      Report[]
 }
 
 enum DocumentCategory {
-  quiz
+  ASSIGNMENT
   CAT
   EXAM
+  QUIZ 
 }
 
 model Report {

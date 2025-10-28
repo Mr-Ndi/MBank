@@ -1,14 +1,16 @@
 import express from "express";
-import { uploadDocument, downloadDocument, getDocumentsByDepartmentAndLevel, getDocumentsByModule } from "../Controllers/Document.controller.js";
+import { uploadDocument } from "../Controllers/Document.controller.js";
 import multer from "multer";
+import SharedMiddleware from "../../utils/middleware.shared.js";
+import DocumentSchemas from "../Schemas/Document.schema.js";
 
 
 const documentRouter = express.Router();
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
-documentRouter.post("/documents/upload", upload.single("file"), uploadDocument);
-documentRouter.get("/documents/download", downloadDocument);
-documentRouter.get("/documents/by-department-level", getDocumentsByDepartmentAndLevel);
-documentRouter.get("/documents/by-module", getDocumentsByModule);
+documentRouter.post("/upload", upload.single("file"), SharedMiddleware.validateBody(DocumentSchemas.documentSchema), SharedMiddleware.uploadToCloudinary('file', '/mbank/ibicupuri'), uploadDocument);
+// documentRouter.get("/download", downloadDocument);
+// documentRouter.get("/by-department-level", getDocumentsByDepartmentAndLevel);
+// documentRouter.get("/documents/by-module", getDocumentsByModule);
 
 export default documentRouter;

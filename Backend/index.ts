@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import morgan from "morgan"
 import studentRouter from "./Student/Route/Student.Route.js";
 import documentRouter from "./Document/Route/Document.route.js";
-import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
+// import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
 
 dotenv.config();
 const app = express();
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 });
 app.use("/student", studentRouter);
 app.use("/document", documentRouter);
-app.use("/admin", AdminRouter)
+// app.use("/admin", AdminRouter)
 
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {

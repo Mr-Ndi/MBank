@@ -1,0 +1,89 @@
+import { Request, Response, NextFunction } from "express";
+import { ObjectSchema } from "joi";
+import cloudinary from "../config/cloudinary.config.js";
+import streamifier from "streamifier";
+
+export  default class SharedMiddleware {
+    /**
+     * Generic middleware to validate req.body against a Joi schema.
+    */
+    static validateBody = (schema: ObjectSchema) =>
+    (req: Request, res: Response, next: NextFunction): void => {
+      const { error, value } = schema.validate(req.body, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+
+       if (error) {
+        const errors = error.details.map((d) => {
+          // Remove quotes and backslashes, capitalize first letter
+          const msg = d.message.replace(/["\\]/g, "");
+          return msg.charAt(0).toUpperCase() + msg.slice(1);
+        });
+
+
+        res.status(400).json({
+          status: "error",
+          message: "Validation failed",
+          errors,
+        });
+        return;
+      }
+
+      // Replace req.body with sanitized value
+      req.body = value;
+      next();
+    };
+
+    /**
+     * Middleware to upload a file to Cloudinary and attach the URL to req.body
+     * @param fieldName the key of the uploaded file in req.file
+     * @param folder optional Cloudinary folder name
+     */
+
+    static uploadToCloudinary = (fieldName: string, folder = "uploads") =>
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+        const file = req.file;
+
+        if (!file) {
+            res.status(400).json({
+            status: "error",
+            message:'File is required',
+            errors: [" `File (${fieldName}) is required`"]
+            });
+            return;
+        }
+
+        const buffer = file.buffer;
+
+        // Function to upload buffer to Cloudinary using a stream
+        const uploadStream = () =>
+            new Promise<string>((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder },
+                (error, result) => {
+                if (error) reject(error);
+                else if (result?.secure_url) resolve(result.secure_url);
+                else reject(new Error("Cloudinary upload failed"));
+                }
+            );
+            streamifier.createReadStream(buffer).pipe(stream);
+            });
+
+        const fileUrl = await uploadStream();
+
+        // Attach URL to request body
+        req.body["url"] = fileUrl;
+
+        next();
+        } catch (err: any) {
+        console.error(err);
+        res.status(500).json({
+            status: "error",
+            message: err.message || "Cloudinary upload failed",
+        });
+        }
+    };
+
+}

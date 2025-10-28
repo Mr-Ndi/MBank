@@ -1,11 +1,10 @@
-import { DocumentModel} from "../Model/Document.models.js";
+import DocumentRepo from "../Repository/Document.repo.js";
 import { google } from "googleapis";
 import fs from "fs";
 import mime from "mime-types";
 import dotenv from "dotenv";
-
+import { DocUploadInterface } from "../Interface/Document.interface.js";
 dotenv.config();
-const documentModel = new DocumentModel();
 
 // Google Auth Setup
 const auth = new google.auth.GoogleAuth({
@@ -15,139 +14,87 @@ const auth = new google.auth.GoogleAuth({
 
 const drive = google.drive({ version: "v3", auth });
 
-export class DocumentService {
+export default class DocumentService {
     /**
      * Upload a document to Google Drive and save the URL in the database.
      */
-    async uploadDocument(
-        filePath: string,
-        fileName: string,
-        school: string,
-        fieldId: string,
-        department: string,
-        level: number,
-        module: string,
-        category: string,
-        studentId: number
-    ): Promise<any> {
+    static async uploadDocument(inputs: DocUploadInterface): Promise<any> {
         try {
-            const mimeType = mime.lookup(filePath) || "application/octet-stream";
-
-            // Upload file to Google Drive
-            const fileMetadata = { name: fileName };
-            const media = { mimeType, body: fs.createReadStream(filePath) };
-
-            const response = await drive.files.create({
-                requestBody: fileMetadata,
-                media: media,
-                fields: "id",
-            });
-
-            const fileId = response.data.id;
-            if (!fileId) throw new Error("Failed to upload file. No file ID returned.");
-
-            // Make file publicly accessible
-            await drive.permissions.create({
-                fileId,
-                requestBody: {
-                    role: "reader",
-                    type: "anyone",
-                },
-            });
-
-            // Get File URL (Direct Download Link)
-            const file = await drive.files.get({
-                fileId,
-                fields: "webViewLink, webContentLink",
-            });
-
-            const fileUrl = file.data.webContentLink || file.data.webViewLink;
-            if (!fileUrl) throw new Error("Failed to retrieve file URL.");
-
-            // Save file URL in the database
-            return await documentModel.saveDocument(
-                school,
-                fieldId,
-                department,
-                level,
-                module,
-                category,
-                fileUrl, // This will be stored in the database as filePath
-                studentId
-            );
+            const result = await DocumentRepo.saveDocument(inputs);
+            return result;
         } catch (error: any) {
             console.error(`Error uploading document: ${error.message}`);
             throw new Error("Failed to upload document.");
         }
     }
 
-    /**
-     * Get the file download URL.
-     */
-    async downloadDocument(url: string): Promise<any> {
-        try {
-            return { downloadUrl: url };
-        } catch (error: any) {
-            console.error(`Error downloading document: ${error.message}`);
-            throw new Error("Failed to download document.");
-        }
-    }
+//     /**
+//      * Get the file download URL.
+//      */
+//     async downloadDocument(url: string): Promise<any> {
+//         try {
+//             return { downloadUrl: url };
+//         } catch (error: any) {
+//             console.error(`Error downloading document: ${error.message}`);
+//             throw new Error("Failed to download document.");
+//         }
+//     }
 
-    /**
-     * Get documents by department and level.
-     */
-    async getDocumentsByDepartmentAndLevel(department: string, level: number) {
-        try {
-            return await documentModel.getDocumentsByDepartmentAndLevel(department, level);
-        } catch (error: any) {
-            console.error(`Error fetching documents: ${error.message}`);
-            throw new Error("Failed to fetch documents.");
-        }
-    }
+//     /**
+//      * Get documents by department and level.
+//      */
+//     async getDocumentsByDepartmentAndLevel(department: string, level: number) {
+//         try {
+//             return await documentModel.getDocumentsByDepartmentAndLevel(department, level);
+//         } catch (error: any) {
+//             console.error(`Error fetching documents: ${error.message}`);
+//             throw new Error("Failed to fetch documents.");
+//         }
+//     }
 
-    /**
-     * Get documents by module.
-     */
-    async getDocumentsByModule(module: string) {
-        try {
-            return await documentModel.getDocumentsByModule(module);
-        } catch (error: any) {
-            console.error(`Error fetching documents: ${error.message}`);
-            throw new Error("Failed to fetch documents.");
-        }
-    }
+//     /**
+//      * Get documents by module.
+//      */
+//     async getDocumentsByModule(module: string) {
+//         try {
+//             return await documentModel.getDocumentsByModule(module);
+//         } catch (error: any) {
+//             console.error(`Error fetching documents: ${error.message}`);
+//             throw new Error("Failed to fetch documents.");
+//         }
+//     }
 
-    /**
-     * Reporting a document.
-     */
-    async reportDocument(
-        documentId: number,
-        studentId: number,
-        reason: string
-    ): Promise<any>{
-        try {
-            // Check if document exists
-            const document = await documentModel.findDocumentById(documentId);
-            if (!document) {
-                throw new Error("Document not found.");
-            }
+//     /**
+//      * Reporting a document.
+//      */
+//     async reportDocument(
+//         documentId: number,
+//         studentId: number,
+//         reason: string
+//     ): Promise<any>{
+//         try {
+//             // Check if document exists
+//             const document = await documentModel.findDocumentById(documentId);
+//             if (!document) {
+//                 throw new Error("Document not found.");
+//             }
     
-            // Validate report reason
-            const validReasons = ["INAPPROPRIATE", "DUPLICATE", "COPYRIGHT", "OTHER"];
-            if (!validReasons.includes(reason.toUpperCase())) {
-                throw new Error("Invalid report reason.");
-            }
+//             // Validate report reason
+//             const validReasons = ["INAPPROPRIATE", "DUPLICATE", "COPYRIGHT", "OTHER"];
+//             if (!validReasons.includes(reason.toUpperCase())) {
+//                 throw new Error("Invalid report reason.");
+//             }
     
-            // Save the new report
-            await documentModel.createReport(documentId, studentId, reason.toUpperCase());
+//             // Save the new report
+//             await documentModel.createReport(documentId, studentId, reason.toUpperCase());
     
-            // Increment report count in the document
-            await documentModel.incrementReportCount(documentId);
+//             // Increment report count in the document
+//             await documentModel.incrementReportCount(documentId);
     
-            return { message: "Document reported successfully." };
-        } catch (error: any) {
-            console.error(`Error reporting document: ${error.message}`);
-            throw new Error("Failed to report document.");
-        }
-    }
+//             return { message: "Document reported successfully." };
+//         } catch (error: any) {
+//             console.error(`Error reporting document: ${error.message}`);
+//             throw new Error("Failed to report document.");
+//         }
+//     }
 }
