@@ -22,7 +22,7 @@ app.use("/student", studentRouter);
 app.use("/document", documentRouter);
 // app.use("/admin", AdminRouter)
 
-const PORT = process.env.PORT || 5500;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`---------------------------------`);
     console.log(`Server listening on port ${PORT}`);

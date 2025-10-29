@@ -1,5 +1,10 @@
-import swaggerJSDoc, { Options } from "swagger-jsdoc";
+import swaggerJSDoc, { Options } from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const nodeEnv = process.env.NODE_ENV || "development";
 
 const options: Options = {
   definition: {
@@ -17,7 +22,7 @@ const options: Options = {
     ],
   },
   apis: [
-    "./src/**/*.route.ts",
+    nodeEnv === 'production' ? "./dist/**/*.route.js" : "./src/**/*.route.ts",
   ],
 };
 
