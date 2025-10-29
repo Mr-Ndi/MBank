@@ -26,7 +26,6 @@ const options: Options = {
   ],
 };
 
-// Generate Swagger specification
 const swaggerSpec = swaggerJSDoc(options);
 
 export { swaggerUi, swaggerSpec };
