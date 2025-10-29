@@ -24,6 +24,25 @@ export default class DocumentRepo {
         });
     }
 
+    static async getDocuments(filters: Partial<DocUploadInterface>): Promise<any[]> {
+        const where: any = {};
+
+        // Dynamically build filters (only include provided ones)
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                where[key] = value;
+            }
+        });
+
+        return await prisma.document.findMany({
+            where,
+            orderBy: {
+                date: 'desc',
+            },
+        });
+    }
+
+
     // /**
     //  * Retrieve documents by department and level.
     //  */

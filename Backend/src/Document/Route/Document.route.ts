@@ -1,5 +1,5 @@
 import express from "express";
-import { uploadDocument } from "../Controllers/Document.controller.js";
+import { getDocuments, uploadDocument } from "../Controllers/Document.controller.js";
 import multer from "multer";
 import SharedMiddleware from "../../utils/middleware.shared.js";
 import DocumentSchemas from "../Schemas/Document.schema.js";
@@ -112,6 +112,8 @@ const upload = multer({ storage: multer.memoryStorage() });
  */
 
 documentRouter.post("/upload", upload.single("file"), SharedMiddleware.validateBody(DocumentSchemas.documentSchema), SharedMiddleware.uploadToCloudinary('file', '/mbank/ibicupuri'), uploadDocument);
+documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQuerySchema), getDocuments);
+
 // documentRouter.get("/download", downloadDocument);
 // documentRouter.get("/by-department-level", getDocumentsByDepartmentAndLevel);
 // documentRouter.get("/documents/by-module", getDocumentsByModule);

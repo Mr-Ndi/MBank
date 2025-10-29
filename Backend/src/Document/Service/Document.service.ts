@@ -5,15 +5,6 @@ import mime from "mime-types";
 import dotenv from "dotenv";
 import { DocUploadInterface } from "../Interface/Document.interface.js";
 dotenv.config();
-
-// Google Auth Setup
-const auth = new google.auth.GoogleAuth({
-    keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    scopes: ["https://www.googleapis.com/auth/drive.file"],
-});
-
-const drive = google.drive({ version: "v3", auth });
-
 export default class DocumentService {
     /**
      * Upload a document to Google Drive and save the URL in the database.
@@ -27,6 +18,17 @@ export default class DocumentService {
             throw new Error("Failed to upload document.");
         }
     }
+
+    static async getDocuments(query: any): Promise<any[]> {
+        try {
+            const documents = await DocumentRepo.getDocuments(query);
+            return documents;
+        } catch (error: any) {
+            console.error(`Error fetching documents: ${error.message}`);
+            throw new Error("Failed to fetch documents.");
+        }
+    }
+
 
 //     /**
 //      * Get the file download URL.

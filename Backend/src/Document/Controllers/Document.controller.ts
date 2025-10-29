@@ -20,9 +20,25 @@ export const uploadDocument = async (req: Request, res: Response): Promise<any> 
 };
 
 
-// /**
-//  * Get documents by department and level.
-//  */
+/**
+ * Get documents by department and level.
+ */
+
+export const getDocuments = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const filters = req.query; // e.g. /document?school=Harvard&category=EXAM
+        const documents = await DocumentService.getDocuments(filters);
+        return res.status(200).json({
+            message: "Documents fetched successfully",
+            data: documents,
+            status: "success"
+        });
+    } catch (error: any) {
+        console.error(`Error fetching documents: ${error.message}`);
+        return res.status(500).json({ error: "Failed to fetch documents." });
+    }
+};
+
 // export const getDocumentsByDepartmentAndLevel = async (req: Request, res: Response): Promise<any> => {
 //     const { department, level } = req.query;
 

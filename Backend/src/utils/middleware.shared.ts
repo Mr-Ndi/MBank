@@ -35,12 +35,6 @@ export  default class SharedMiddleware {
       next();
     };
 
-    /**
-     * Middleware to upload a file to Cloudinary and attach the URL to req.body
-     * @param fieldName the key of the uploaded file in req.file
-     * @param folder optional Cloudinary folder name
-     */
-
     static uploadToCloudinary = (fieldName: string, folder = "uploads") =>
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -84,6 +78,32 @@ export  default class SharedMiddleware {
             message: err.message || "Cloudinary upload failed",
         });
         }
+    };
+
+    static validateQuery = (schema: ObjectSchema) =>
+    (req: Request, res: Response, next: NextFunction): void => {
+      const { error, value } = schema.validate(req.query, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+
+      if (error) {
+        const errors = error.details.map((d) => {
+          const msg = d.message.replace(/["\\]/g, "");
+          return msg.charAt(0).toUpperCase() + msg.slice(1);
+        });
+
+        res.status(400).json({
+          status: "error",
+          message: "Invalid query parameters",
+          errors,
+        });
+        return;
+      }
+
+      // Replace req.query with sanitized value
+      req.query = value;
+      next();
     };
 
 }
