@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  googleId  String  @unique
+  id        String     @id @default(uuid())
+  googleId  String?    @unique
   email     String     @unique
   firstName String
   lastName  String
   username  String
+  password  String?
   createdAt DateTime   @default(now())
   document  Document[]
   Report    Report[]
 }
 
 model Document {
-  id          Int              @id @default(autoincrement())
+  id          String           @id @default(uuid())
   school      String
   moduleCode  String
   department  String
@@ -37,7 +38,7 @@ model Document {
   url         String
   approved    Boolean          @default(false)
   uploadedAt  DateTime         @default(now())
-  userId      Int?
+  userId      String?
   User        User?            @relation(fields: [userId], references: [id])
   reportCount Int              @default(0)
   Report      Report[]
@@ -54,8 +55,8 @@ model Report {
   id         Int          @id @default(autoincrement())
   reason     ReportReason
   status     ReportStatus @default(PENDING)
-  userId     Int
-  documentId Int
+  userId     String
+  documentId String
   User       User         @relation(fields: [userId], references: [id])
   Document   Document     @relation(fields: [documentId], references: [id])
   createdAt  DateTime     @default(now())

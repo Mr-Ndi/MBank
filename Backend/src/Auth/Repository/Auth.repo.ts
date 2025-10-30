@@ -13,12 +13,19 @@ export default class AuthRepository {
   static async createUser(data: Partial<UserInterface>): Promise<UserInterface> {
     return await prisma.user.create({
       data: {
-        googleId: data.googleId!,
+        googleId: data.googleId? data.googleId : null,
         email: data.email!,
         firstName: data.firstName!,
         lastName: data.lastName!,
         username: data.username!,
+        password: data.password? data.password : null,
       },
+    });
+  }
+
+  static async findUserByEmail(email: string): Promise<UserInterface | null> {
+    return await prisma.user.findUnique({
+      where: { email },
     });
   }
 };

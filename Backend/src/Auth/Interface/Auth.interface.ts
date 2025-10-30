@@ -1,9 +1,11 @@
 export interface UserInterface {
-  id: number;
-  googleId: string;
+  id: String;
+  googleId: string | null;
   email: string;
   firstName: string;
   lastName: string;
   username: string;
+  password?: string | null;
   createdAt: Date;
 }
+

@@ -14,8 +14,6 @@ passport.use(new GoogleStrategy({
 }, 
 async (accessToken: string, refreshToken: string, profile: Profile, done: Function) => {
   try {
-
-    console.log("Profile:", profile)
     const result = await AuthService.handleGoogleAuth(profile);
 
     // For now, just return the profile:
