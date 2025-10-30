@@ -201,9 +201,7 @@ Authrouter.get('/google/callback',
  *                   example: Internal server error
  */
 
-
 Authrouter.post('/register', SharedMiddleware.validateBody(registerSchema), AuthController.createUserWithPassword);
-
 
 /**
  * @swagger
