@@ -29,6 +29,15 @@ export default class DocumentService {
         }
     }
 
+    static async updateDocument(id: string, updates: Partial<DocUploadInterface>): Promise<any> {
+        try {
+            const updatedDocument = await DocumentRepo.updateDocument(id, updates);
+            return updatedDocument;
+        } catch (error: any) {
+            throw new Error("Failed to update document.");
+        }
+    }
+
 
 //     /**
 //      * Get the file download URL.

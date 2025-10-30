@@ -20,7 +20,7 @@ export default class DocumentSchemas {
     category: Joi.string()
         .valid(...Object.values(DocumentCategory))
         .required(), 
-    studentId: Joi.number().integer().positive().optional().allow(null),
+    userId: Joi.number().integer().positive().optional().allow(null),
   });
 
   static documentQuerySchema = Joi.object({
@@ -33,5 +33,18 @@ export default class DocumentSchemas {
       .valid(...Object.values(DocumentCategory))
       .optional(),
   }).unknown(false); 
+
+  static documentUpdateSchema = Joi.object({
+    school: Joi.string().trim().optional(),
+    moduleCode: Joi.string().trim().optional(),
+    department: Joi.string().trim().optional(),
+    level: Joi.number().integer().min(1).max(10).optional(),
+    moduleName: Joi.string().trim().optional(),
+    date: Joi.date().iso().optional(),
+    userId: Joi.number().integer().positive().optional().allow(null),
+    category: Joi.string()
+        .valid(...Object.values(DocumentCategory))
+        .optional(), 
+  }).min(1).unknown(false);
 }
 

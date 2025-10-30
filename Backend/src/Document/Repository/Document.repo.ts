@@ -23,7 +23,6 @@ export default class DocumentRepo {
             },
         });
     }
-
     static async getDocuments(filters: Partial<DocUploadInterface>): Promise<any[]> {
         const where: any = {};
 
@@ -42,6 +41,12 @@ export default class DocumentRepo {
         });
     }
 
+    static async updateDocument(id: string, updates: Partial<DocUploadInterface>): Promise<any> {
+        return await prisma.document.update({
+            where: { id },
+            data: updates as any,
+        });
+    }
 
     // /**
     //  * Retrieve documents by department and level.

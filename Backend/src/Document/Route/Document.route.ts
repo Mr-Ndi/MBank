@@ -1,5 +1,5 @@
 import express from "express";
-import { getDocuments, uploadDocument } from "../Controllers/Document.controller.js";
+import { getDocuments, updateDocument, uploadDocument } from "../Controllers/Document.controller.js";
 import multer from "multer";
 import SharedMiddleware from "../../utils/middleware.shared.js";
 import DocumentSchemas from "../Schemas/Document.schema.js";
@@ -264,6 +264,8 @@ documentRouter.post("/upload", upload.single("file"), SharedMiddleware.validateB
  */
 
 documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQuerySchema), getDocuments);
+
+documentRouter.put("/:id", SharedMiddleware.validateBody(DocumentSchemas.documentUpdateSchema), updateDocument);
 
 // documentRouter.get("/download", downloadDocument);
 // documentRouter.get("/by-department-level", getDocumentsByDepartmentAndLevel);

@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import DocumentService from "../Service/Document.service.js";
 
-/**
- * Upload a document.
- */
 export const uploadDocument = async (req: Request, res: Response): Promise<any> => {
 
     try {
@@ -19,11 +16,6 @@ export const uploadDocument = async (req: Request, res: Response): Promise<any> 
     }
 };
 
-
-/**
- * Get documents by department and level.
- */
-
 export const getDocuments = async (req: Request, res: Response): Promise<any> => {
     try {
         const filters = req.query; // e.g. /document?school=Harvard&category=EXAM
@@ -38,6 +30,22 @@ export const getDocuments = async (req: Request, res: Response): Promise<any> =>
         return res.status(500).json({ error: "Failed to fetch documents." });
     }
 };
+
+export const updateDocument = async (req: Request, res: Response): Promise<any> => {
+    const { id } = req.params;
+    const updates = req.body;
+
+    try {
+        const updatedDocument = await DocumentService.updateDocument(id, updates);
+        return res.status(200).json({
+            message: "Document updated successfully",
+            data: [updatedDocument],
+            status: "success"
+        });
+    } catch (error: any) {
+        return res.status(500).json({ error: "Failed to update document." });
+    }
+}
 
 // export const getDocumentsByDepartmentAndLevel = async (req: Request, res: Response): Promise<any> => {
 //     const { department, level } = req.query;
