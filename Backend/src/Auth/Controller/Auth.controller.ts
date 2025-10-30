@@ -49,4 +49,20 @@ export default class AuthController {
             return res.status(500).json({ message: 'User creation failed', error: err });
         }
     }
+
+    static async loginWithPassword (req: Request, res: Response): Promise<any> {
+        try {
+            const { email, password } = req.body;
+            const result = await AuthService.loginWithPassword(email, password);
+            return res.json({
+                status: 'success',
+                message: 'Login successful',
+                data: [
+                    result
+                ]
+            });
+        } catch (err) {
+            return res.status(500).json({ message: 'Login failed', error: err });
+        }
+    }
 };

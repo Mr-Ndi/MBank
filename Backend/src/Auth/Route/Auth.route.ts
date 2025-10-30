@@ -2,7 +2,7 @@ import express from 'express';
 import passport from '../Config/passport.config.js';
 import AuthController  from '../Controller/Auth.controller.js';
 import SharedMiddleware from '../../utils/middleware.shared.js';
-import { registerSchema } from '../Schema/Auth.schema.js';
+import { loginSchema, registerSchema } from '../Schema/Auth.schema.js';
 
 const Authrouter = express.Router();
 
@@ -203,5 +203,109 @@ Authrouter.get('/google/callback',
 
 
 Authrouter.post('/register', SharedMiddleware.validateBody(registerSchema), AuthController.createUserWithPassword);
+
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     description: Authenticates a user with their email and password. Returns a JWT access token and basic user info.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: alic.johnson@example.com
+ *                 description: The user's registered email address.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: securePass123
+ *                 description: The user's plain text password to be verified.
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                       description: JWT access token used for authentication.
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                           example: e827d81b-2b08-435f-933f-7873880ca903
+ *                         email:
+ *                           type: string
+ *                           format: email
+ *                           example: alic.johnson@example.com
+ *                         firstName:
+ *                           type: string
+ *                           example: Alce
+ *                         lastName:
+ *                           type: string
+ *                           example: Johnsorn
+ *                         username:
+ *                           type: string
+ *                           example: alcej
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
+ *                           example: 2025-10-30T17:22:03.800Z
+ *       400:
+ *         description: Invalid email or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+Authrouter.post('/login',SharedMiddleware.validateBody(loginSchema), AuthController.loginWithPassword);
 
 export default Authrouter;
