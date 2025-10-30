@@ -13,32 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student {
-  id         Int        @id @default(autoincrement())
-  email      String     @unique
-  username   String
-  password   String
-  school     String
-  department String
-  regnumber  Int
-  document   Document[]
-  Report     Report[]
+model User {
+  id        Int        @id @default(autoincrement())
+  googleId  String  @unique
+  email     String     @unique
+  firstName String
+  lastName  String
+  username  String
+  createdAt DateTime   @default(now())
+  document  Document[]
+  Report    Report[]
 }
 
 model Document {
   id          Int              @id @default(autoincrement())
   school      String
-  moduleCode    String
+  moduleCode  String
   department  String
   level       Int
-  moduleName      String
+  moduleName  String
   date        DateTime
   category    DocumentCategory
   url         String
   approved    Boolean          @default(false)
   uploadedAt  DateTime         @default(now())
-  studentId   Int?
-  Student     Student?          @relation(fields: [studentId], references: [id])
+  userId      Int?
+  User        User?            @relation(fields: [userId], references: [id])
   reportCount Int              @default(0)
   Report      Report[]
 }
@@ -47,16 +47,16 @@ enum DocumentCategory {
   ASSIGNMENT
   CAT
   EXAM
-  QUIZ 
+  QUIZ
 }
 
 model Report {
   id         Int          @id @default(autoincrement())
   reason     ReportReason
   status     ReportStatus @default(PENDING)
-  studentId  Int
+  userId     Int
   documentId Int
-  Student    Student      @relation(fields: [studentId], references: [id])
+  User       User         @relation(fields: [userId], references: [id])
   Document   Document     @relation(fields: [documentId], references: [id])
   createdAt  DateTime     @default(now())
 }

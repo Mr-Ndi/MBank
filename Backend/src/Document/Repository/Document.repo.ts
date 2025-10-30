@@ -18,7 +18,7 @@ export default class DocumentRepo {
                 moduleName: inputs.moduleName,
                 date: new Date(inputs.date),
                 category: inputs.category as DocumentCategory,
-                studentId: inputs.studentId ?? null,
+                userId: inputs.userId ?? null,
                 url: inputs.url,
             },
         });
@@ -89,14 +89,14 @@ export default class DocumentRepo {
     //  * Creating a report
     //  */
 
-    // async createReport(documentId: number, studentId: number, reason: string) {
+    // async createReport(documentId: number, userId: number, reason: string) {
     //     try {
     //         if (!Object.values(ReportReason).includes(reason as ReportReason)) {
     //             throw new Error(`Invalid report reason: ${reason}. Must be one of: ${Object.values(ReportReason).join(", ")}`);
     //         }
     
     //         return await prisma.report.create({
-    //             data: { documentId, studentId, reason: reason as ReportReason },
+    //             data: { documentId, userId, reason: reason as ReportReason },
     //         });
     //     } catch (error: any) {
     //         console.error(`Error creating report: ${error.message}`);

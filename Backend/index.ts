@@ -5,6 +5,7 @@ import morgan from "morgan"
 import studentRouter from "./src/Student/Route/Student.Route.js";
 import documentRouter from "./src/Document/Route/Document.route.js";
 import { swaggerSpec, swaggerUi } from "./src/config/swagger.config.js";
+import Authrouter from "./src/Auth/Route/Auth.route.js";
 // import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/student", studentRouter);
 app.use("/document", documentRouter);
+app.use("/auth", Authrouter);
 // app.use("/admin", AdminRouter)
 
 const PORT = process.env.PORT || 4000;

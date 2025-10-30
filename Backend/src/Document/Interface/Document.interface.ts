@@ -8,6 +8,6 @@ export interface DocUploadInterface {
     moduleName: string;
     date: string; // ISO 8601 formatted date string (e.g., "2025-10-28T14:30:00Z")
     category: DocumentCategory;
-    studentId?: number | null;
+    userId?: number | null;
     url: string;
 }
