@@ -88,6 +88,120 @@ Authrouter.get('/google', passport.authenticate('google', {
 Authrouter.get('/google/callback', 
   passport.authenticate('google', { session: false, failureRedirect: '/auth/login-failure' }), AuthController.googleCallback);
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account with basic information and a hashed password.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Alce
+ *                 description: The user's first name (2–30 characters).
+ *               lastName:
+ *                 type: string
+ *                 example: Johnsorn
+ *                 description: The user's last name (2–30 characters).
+ *               username:
+ *                 type: string
+ *                 example: alcej
+ *                 description: The username for login (3–30 characters).
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: alic.johnson@example.com
+ *                 description: The user's unique email address.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: securePass123
+ *                 description: The user's password (minimum 6 characters, will be hashed).
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: User created successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       example: e827d81b-2b08-435f-933f-7873880ca903
+ *                     googleId:
+ *                       type: string
+ *                       nullable: true
+ *                       example: null
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: alic.johnson@example.com
+ *                     firstName:
+ *                       type: string
+ *                       example: Alce
+ *                     lastName:
+ *                       type: string
+ *                       example: Johnsorn
+ *                     username:
+ *                       type: string
+ *                       example: alcej
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2025-10-30T17:22:03.800Z
+ *       400:
+ *         description: Validation error or bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid input data
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+
 Authrouter.post('/register', SharedMiddleware.validateBody(registerSchema), AuthController.createUserWithPassword);
 
 export default Authrouter;
