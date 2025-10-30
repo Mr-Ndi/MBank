@@ -265,6 +265,53 @@ documentRouter.post("/upload", upload.single("file"), SharedMiddleware.validateB
 
 documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQuerySchema), getDocuments);
 
+/**
+ * @swagger
+ * /document/{id}:
+ *   put:
+ *     summary: Update a document
+ *     tags: [Documents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the document to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               school:
+ *                 type: string
+ *               moduleCode:
+ *                 type: string
+ *               moduleName:
+ *                 type: string
+ *               department:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Document updated successfully
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Failed to update document
+ */
+
+
 documentRouter.put("/:id", SharedMiddleware.validateBody(DocumentSchemas.documentUpdateSchema), updateDocument);
 
 // documentRouter.get("/download", downloadDocument);
