@@ -28,4 +28,10 @@ export default class AuthRepository {
       where: { email },
     });
   }
+
+  static async findUserById(id: string): Promise<UserInterface | null> {
+    return await prisma.user.findUnique({
+      where: { id },
+    });
+  }
 };

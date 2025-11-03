@@ -20,7 +20,8 @@ export default class DocumentSchemas {
     category: Joi.string()
         .valid(...Object.values(DocumentCategory))
         .required(), 
-    userId: Joi.number().integer().positive().optional().allow(null),
+    // userId is attached server-side from the authenticated user; do not require it from clients
+    userId: Joi.string().uuid().optional().allow(null),
   });
 
   static documentQuerySchema = Joi.object({
@@ -41,7 +42,7 @@ export default class DocumentSchemas {
     level: Joi.number().integer().min(1).max(10).optional(),
     moduleName: Joi.string().trim().optional(),
     date: Joi.date().iso().optional(),
-    userId: Joi.number().integer().positive().optional().allow(null),
+    userId: Joi.string().uuid().optional().allow(null),
     category: Joi.string()
         .valid(...Object.values(DocumentCategory))
         .optional(), 

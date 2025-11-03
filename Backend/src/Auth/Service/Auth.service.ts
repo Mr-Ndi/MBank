@@ -1,7 +1,7 @@
 import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
 import AuthRepository from '../Repository/Auth.repo.js';
 import { UserInterface } from '../Interface/Auth.interface.js';
+import { signAccessToken } from '../../utils/jwt.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -42,15 +42,7 @@ export default class AuthService {
         if (!isPasswordValid) {
             throw new Error('Invalid email or password.');
         }
-        const token = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-            },
-            process.env.JWT_SECRET as string,
-            { expiresIn: '7d' }
-        );  
+        const token = signAccessToken({ id: user.id as any, username: user.username });
         const { password: _, ...userWithoutPassword } = user;
         return { ...userWithoutPassword, token };
     }

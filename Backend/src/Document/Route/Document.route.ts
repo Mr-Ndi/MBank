@@ -2,6 +2,8 @@ import express from "express";
 import { getDocuments, updateDocument, uploadDocument } from "../Controllers/Document.controller.js";
 import multer from "multer";
 import SharedMiddleware from "../../utils/middleware.shared.js";
+import AuthMiddleware from "../../Auth/Middleware/auth.middleware.js";
+import DocumentMiddleware from "../Middleware/attachUserId.middleware.js";
 import DocumentSchemas from "../Schemas/Document.schema.js";
 
 
@@ -18,6 +20,8 @@ const upload = multer({ storage: multer.memoryStorage() });
  *       The file will be uploaded to Cloudinary and stored in your database.
  *     tags:
  *       - Documents
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -65,30 +69,36 @@ const upload = multer({ storage: multer.memoryStorage() });
  *                 type: string
  *                 enum: [EXAM, ASSIGNMENT, QUIZ, OTHER, CAT]
  *                 example: "EXAM"
- *               studentId:
- *                 type: integer
- *                 nullable: true
- *                 example: 12345
+ *             description: "userId is attached automatically from the authenticated user; do not include it here."
  *     responses:
- *       200:
+ *       201:
  *         description: Document uploaded successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "success"
  *                 message:
  *                   type: string
- *                   example: "Document uploaded successfully."
+ *                   example: "Document uploaded successfully"
  *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 101
- *                     fileUrl:
- *                       type: string
- *                       example: "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/mbank/ibicupuri/file.pdf"
+ *                   $ref: '#/components/schemas/Document'
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
  *       400:
  *         description: Invalid request or validation error
  *         content:
@@ -111,7 +121,15 @@ const upload = multer({ storage: multer.memoryStorage() });
  *                   example: "Failed to upload document."
  */
 
-documentRouter.post("/upload", upload.single("file"), SharedMiddleware.validateBody(DocumentSchemas.documentSchema), SharedMiddleware.uploadToCloudinary('file', '/mbank/ibicupuri'), uploadDocument);
+documentRouter.post(
+	"/upload",
+	AuthMiddleware.authenticate,
+	upload.single("file"),
+	SharedMiddleware.validateBody(DocumentSchemas.documentSchema),
+	SharedMiddleware.uploadToCloudinary('file', '/mbank/ibicupuri'),
+		DocumentMiddleware.attachUserId,
+	uploadDocument
+);
 
 /**
  * @swagger

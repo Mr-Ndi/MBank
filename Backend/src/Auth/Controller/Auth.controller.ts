@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { signAccessToken } from '../../utils/jwt.js';
 import AuthService from '../Service/Auth.service.js';
 
 
@@ -11,15 +11,7 @@ export default class AuthController {
                 return res.status(400).json({ message: 'User information not found' });
             }
 
-            const token = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-            },
-            process.env.JWT_SECRET as string,
-            { expiresIn: '7d' }
-            );
+            const token = signAccessToken({ id: String(user.id), username: String(user.username) });
 
             return res.json({
                 status: 'success',
