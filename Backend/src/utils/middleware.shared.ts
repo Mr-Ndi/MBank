@@ -103,4 +103,24 @@ export  default class SharedMiddleware {
       next();
     };
 
+    static validateParams = (schema: ObjectSchema) =>
+    (req: Request, _res: Response, next: NextFunction): void => {
+      const { error, value } = schema.validate(req.params, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+
+      if (error) {
+        const errors = error.details.map((d) => {
+          const msg = d.message.replace(/["\\]/g, "");
+          return msg.charAt(0).toUpperCase() + msg.slice(1);
+        });
+
+        return next(new AppError(`Invalid path parameters: ${errors.join("; ")}`, 400));
+      }
+
+      req.params = value as any;
+      next();
+    };
+
 }

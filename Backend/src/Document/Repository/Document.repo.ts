@@ -48,6 +48,17 @@ export default class DocumentRepo {
         });
     }
 
+    static async findDocumentById(id: string): Promise<any | null> {
+        return await prisma.document.findUnique({ where: { id } });
+    }
+
+    static async approveDocument(id: string): Promise<any> {
+        return await prisma.document.update({
+            where: { id },
+            data: { approved: true },
+        });
+    }
+
     // /**
     //  * Retrieve documents by department and level.
     //  */

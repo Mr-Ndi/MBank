@@ -47,6 +47,20 @@ export const updateDocument = async (req: Request, res: Response): Promise<any> 
     }
 }
 
+export const approveDocument = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        const { id } = req.params;
+        const result = await DocumentService.approveDocument(id);
+        return res.status(200).json({
+            message: "Document approved successfully",
+            data: result,
+            status: "success",
+        });
+    } catch (error) {
+        return next(error);
+    }
+};
+
 // export const getDocumentsByDepartmentAndLevel = async (req: Request, res: Response): Promise<any> => {
 //     const { department, level } = req.query;
 

@@ -47,5 +47,9 @@ export default class DocumentSchemas {
         .valid(...Object.values(DocumentCategory))
         .optional(), 
   }).min(1).unknown(false);
+
+  static documentIdParamSchema = Joi.object({
+    id: Joi.string().uuid().required(),
+  }).required();
 }
 

@@ -21,13 +21,7 @@ export default class DocumentService {
     }
 
     static async getDocuments(query: any): Promise<any[]> {
-        try {
-            const documents = await DocumentRepo.getDocuments(query);
-            return documents;
-        } catch (error: any) {
-            // Wrap unexpected errors into an operational AppError for consistent handling
-            throw new AppError("Failed to fetch documents.", 500);
-        }
+        return await DocumentRepo.getDocuments(query);
     }
 
     static async updateDocument(id: string, updates: Partial<DocUploadInterface>): Promise<any> {
@@ -36,6 +30,20 @@ export default class DocumentService {
             return updatedDocument;
         } catch (error: any) {
             throw new Error("Failed to update document.");
+        }
+    }
+
+    static async approveDocument(id: string): Promise<any> {
+        try {
+            const exists = await DocumentRepo.findDocumentById(id);
+            if (!exists) {
+                throw new AppError("Document not found.", 404);
+            }
+            const approved = await DocumentRepo.approveDocument(id);
+            return approved;
+        } catch (error: any) {
+            if (error instanceof AppError) throw error;
+            throw new AppError("Failed to approve document.", 500);
         }
     }
 

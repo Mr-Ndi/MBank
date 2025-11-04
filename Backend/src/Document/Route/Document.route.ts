@@ -1,5 +1,5 @@
 import express from "express";
-import { getDocuments, updateDocument, uploadDocument } from "../Controllers/Document.controller.js";
+import { getDocuments, updateDocument, uploadDocument, approveDocument } from "../Controllers/Document.controller.js";
 import multer from "multer";
 import SharedMiddleware from "../../utils/middleware.shared.js";
 import AuthMiddleware from "../../Auth/Middleware/auth.middleware.js";
@@ -331,6 +331,55 @@ documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQ
 
 
 documentRouter.put("/:id", SharedMiddleware.validateBody(DocumentSchemas.documentUpdateSchema), updateDocument);
+
+/**
+ * @swagger
+ * /document/{id}/approve:
+ *   patch:
+ *     summary: Approve a document
+ *     description: Marks the document as approved. Only authenticated users can perform this action.
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID of the document to approve
+ *     responses:
+ *       200:
+ *         description: Document approved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Document approved successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Document'
+ *       400:
+ *         description: Invalid path parameters
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Failed to approve document
+ */
+documentRouter.patch(
+	"/:id/approve",
+	AuthMiddleware.authenticate,
+	SharedMiddleware.validateParams(DocumentSchemas.documentIdParamSchema),
+	approveDocument
+);
 
 // documentRouter.get("/download", downloadDocument);
 // documentRouter.get("/by-department-level", getDocumentsByDepartmentAndLevel);
