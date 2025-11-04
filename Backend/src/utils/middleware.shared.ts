@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ObjectSchema } from "joi";
 import cloudinary from "../config/cloudinary.config.js";
 import streamifier from "streamifier";
+import { AppError } from "./error.js";
 
 export  default class SharedMiddleware {
     /**
@@ -93,12 +94,8 @@ export  default class SharedMiddleware {
           return msg.charAt(0).toUpperCase() + msg.slice(1);
         });
 
-        res.status(400).json({
-          status: "error",
-          message: "Invalid query parameters",
-          errors,
-        });
-        return;
+        // Delegate to universal error handler with combined message
+        return next(new AppError(`Invalid query parameters: ${errors.join("; ")}`, 400));
       }
 
       // Replace req.query with sanitized value

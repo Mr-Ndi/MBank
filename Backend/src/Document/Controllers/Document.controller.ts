@@ -16,7 +16,7 @@ export const uploadDocument = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-export const getDocuments = async (req: Request, res: Response): Promise<any> => {
+export const getDocuments = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         const filters = req.query; // e.g. /document?school=Harvard&category=EXAM
         const documents = await DocumentService.getDocuments(filters);
@@ -25,9 +25,9 @@ export const getDocuments = async (req: Request, res: Response): Promise<any> =>
             data: documents,
             status: "success"
         });
-    } catch (error: any) {
-        console.error(`Error fetching documents: ${error.message}`);
-        return res.status(500).json({ error: "Failed to fetch documents." });
+    } catch (error) {
+        // Delegate to universal error handler
+        return next(error);
     }
 };
 

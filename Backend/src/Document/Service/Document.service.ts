@@ -4,6 +4,7 @@ import fs from "fs";
 import mime from "mime-types";
 import dotenv from "dotenv";
 import { DocUploadInterface } from "../Interface/Document.interface.js";
+import { AppError } from "../../utils/error.js";
 dotenv.config();
 export default class DocumentService {
     /**
@@ -24,8 +25,8 @@ export default class DocumentService {
             const documents = await DocumentRepo.getDocuments(query);
             return documents;
         } catch (error: any) {
-            console.error(`Error fetching documents: ${error.message}`);
-            throw new Error("Failed to fetch documents.");
+            // Wrap unexpected errors into an operational AppError for consistent handling
+            throw new AppError("Failed to fetch documents.", 500);
         }
     }
 

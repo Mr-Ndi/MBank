@@ -13,7 +13,7 @@ export default class DocumentMiddleware {
       // Ensure user exists in DB
       const existing = await AuthRepository.findUserById(String(authUser.id));
       if (!existing) {
-        return next(new AppError("User does not exist", 401));
+        return next(new AppError("Forbidden", 403));
       }
 
       // Attach userId to body for downstream service/repo
