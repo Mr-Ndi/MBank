@@ -5,7 +5,7 @@ export interface UserInterface {
   firstName: string;
   lastName: string;
   username: string;
-  role?: 'ADMIN' | 'GUEST';
+  role: 'ADMIN' | 'GUEST';
   password?: string | null;
   createdAt: Date;
 }

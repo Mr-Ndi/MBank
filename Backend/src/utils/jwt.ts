@@ -3,6 +3,7 @@ import jwt, { type Secret, type SignOptions } from 'jsonwebtoken';
 export interface TokenPayload {
   id: string;
   username: string;
+  role: 'ADMIN' | 'GUEST';
 }
 
 export function signAccessToken(payload: TokenPayload, expiresIn: string | number = '7d'): string {

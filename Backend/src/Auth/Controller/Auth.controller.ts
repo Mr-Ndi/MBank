@@ -11,7 +11,7 @@ export default class AuthController {
                 return res.status(400).json({ message: 'User information not found' });
             }
 
-            const token = signAccessToken({ id: String(user.id), username: String(user.username) });
+            const token = signAccessToken({ id: String(user.id), username: String(user.username), role: (user as any).role ?? 'GUEST' });
 
             return res.json({
                 status: 'success',

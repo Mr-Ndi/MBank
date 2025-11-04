@@ -21,6 +21,7 @@ model User {
   lastName  String
   username  String
   password  String?
+  role      Role       @default(GUEST)
   createdAt DateTime   @default(now())
   document  Document[]
   Report    Report[]
@@ -73,4 +74,9 @@ enum ReportStatus {
   PENDING
   REVIEWED
   RESOLVED
+}
+
+enum Role {
+  ADMIN
+  GUEST
 }

@@ -289,6 +289,8 @@ documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQ
  *   put:
  *     summary: Update a document
  *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -328,9 +330,13 @@ documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQ
  *       500:
  *         description: Failed to update document
  */
-
-
-documentRouter.put("/:id", SharedMiddleware.validateBody(DocumentSchemas.documentUpdateSchema), updateDocument);
+documentRouter.put(
+	"/:id",
+	AuthMiddleware.authenticate,
+	AuthMiddleware.requireRoles('ADMIN'),
+	SharedMiddleware.validateBody(DocumentSchemas.documentUpdateSchema),
+	updateDocument
+);
 
 /**
  * @swagger
@@ -377,6 +383,7 @@ documentRouter.put("/:id", SharedMiddleware.validateBody(DocumentSchemas.documen
 documentRouter.patch(
 	"/:id/approve",
 	AuthMiddleware.authenticate,
+	AuthMiddleware.requireRoles('ADMIN'),
 	SharedMiddleware.validateParams(DocumentSchemas.documentIdParamSchema),
 	approveDocument
 );

@@ -28,7 +28,7 @@ export default class AuthMiddleware {
         return next(new AppError('Server configuration error', 500));
       }
 
-  const decoded = jwt.verify(token, secret) as { id: string; username: string; iat: number; exp: number };
+  const decoded = jwt.verify(token, secret) as { id: string; username: string; role: 'ADMIN' | 'GUEST'; iat: number; exp: number };
       // Load full user to satisfy typing and keep req.user consistent across app
       const user: UserInterface | null = await AuthRepository.findUserById(decoded.id);
       if (!user) {
@@ -43,4 +43,15 @@ export default class AuthMiddleware {
       return next(new AppError(isJwtError ? 'Invalid or expired token' : 'Authentication failed', isJwtError ? 401 : 500));
     }
   };
+
+  static requireRoles = (...roles: Array<'ADMIN' | 'GUEST'>) => (req: Request, _res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(new AppError('Unauthorized', 401));
+    }
+    const role = (req.user as any).role as 'ADMIN' | 'GUEST' | undefined;
+    if (!role || !roles.includes(role)) {
+      return next(new AppError('Forbidden', 403));
+    }
+    return next();
+  }
 }

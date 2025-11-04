@@ -42,7 +42,7 @@ export default class AuthService {
         if (!isPasswordValid) {
             throw new Error('Invalid email or password.');
         }
-        const token = signAccessToken({ id: user.id as any, username: user.username });
+        const token = signAccessToken({ id: user.id as any, username: user.username, role: user.role as any });
         const { password: _, ...userWithoutPassword } = user;
         return { ...userWithoutPassword, token };
     }
