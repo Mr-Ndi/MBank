@@ -5,6 +5,7 @@ import morgan from "morgan"
 import documentRouter from "./src/Document/Route/Document.route.js";
 import { swaggerSpec, swaggerUi } from "./src/config/swagger.config.js";
 import Authrouter from "./src/Auth/Route/Auth.route.js";
+import { errorHandler } from "./src/utils/error.js";
 // import AdminRouter from "./Kibamba/Route/Kibamba.router.js"
 // import studentRouter from "./src/Student/Route/Student.Route.js";
 
@@ -23,6 +24,9 @@ app.use("/document", documentRouter);
 app.use("/auth", Authrouter);
 // app.use("/admin", AdminRouter)
 // app.use("/student", studentRouter);
+
+// Universal error handler (must be after all routes/middleware)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

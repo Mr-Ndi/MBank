@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import DocumentService from "../Service/Document.service.js";
 
-export const uploadDocument = async (req: Request, res: Response): Promise<any> => {
+export const uploadDocument = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
 
     try {
         const savedDocument = await DocumentService.uploadDocument(req.body);
@@ -11,8 +11,8 @@ export const uploadDocument = async (req: Request, res: Response): Promise<any> 
             status: "success"
         });
     } catch (error: any) {
-        console.error(`Error uploading document: ${error.message}`);
-        return res.status(500).json({ error: "Failed to upload document." });
+        // Delegate to universal error handler
+        return next(error);
     }
 };
 

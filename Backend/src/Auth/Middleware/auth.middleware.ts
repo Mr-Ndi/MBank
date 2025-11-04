@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import AuthRepository from '../Repository/Auth.repo.js';
 import { UserInterface } from '../Interface/Auth.interface.js';
+import { AppError } from '../../utils/error.js';
 
 /**
  * AuthMiddleware
@@ -13,44 +14,25 @@ export default class AuthMiddleware {
     try {
       const authHeader = req.headers.authorization || '';
       if (!authHeader.startsWith('Bearer ')) {
-        res.status(401).json({
-          status: 'error',
-          message: 'Unauthorized',
-          errors: ['Missing or invalid Authorization header'],
-        });
-        return;
+        return next(new AppError('Missing or invalid Authorization header', 401));
       }
 
       const token = authHeader.split(' ')[1];
       if (!token) {
-        res.status(401).json({
-          status: 'error',
-          message: 'Unauthorized',
-          errors: ['Token not provided'],
-        });
-        return;
+        return next(new AppError('Token not provided', 401));
       }
 
       const secret = process.env.JWT_SECRET as string;
       if (!secret) {
         // Misconfiguration guard
-        res.status(500).json({
-          status: 'error',
-          message: 'Server configuration error',
-        });
-        return;
+        return next(new AppError('Server configuration error', 500));
       }
 
   const decoded = jwt.verify(token, secret) as { id: string; username: string; iat: number; exp: number };
       // Load full user to satisfy typing and keep req.user consistent across app
       const user: UserInterface | null = await AuthRepository.findUserById(decoded.id);
       if (!user) {
-        res.status(401).json({
-          status: 'error',
-          message: 'Unauthorized',
-          errors: ['User not found'],
-        });
-        return;
+        return next(new AppError('User not found', 401));
       }
 
       req.user = user;
@@ -58,10 +40,7 @@ export default class AuthMiddleware {
     } catch (err: any) {
       // jwt errors: TokenExpiredError, JsonWebTokenError, NotBeforeError
       const isJwtError = err?.name && ['TokenExpiredError', 'JsonWebTokenError', 'NotBeforeError'].includes(err.name);
-      res.status(isJwtError ? 401 : 500).json({
-        status: 'error',
-        message: isJwtError ? 'Invalid or expired token' : 'Authentication failed',
-      });
+      return next(new AppError(isJwtError ? 'Invalid or expired token' : 'Authentication failed', isJwtError ? 401 : 500));
     }
   };
 }
