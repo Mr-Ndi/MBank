@@ -59,6 +59,19 @@ export default class DocumentRepo {
         });
     }
 
+    static async createReport(documentId: string, userId: string, reason: ReportReason): Promise<any> {
+        return await prisma.report.create({
+            data: { documentId, userId, reason },
+        });
+    }
+
+    static async incrementReportCount(documentId: string): Promise<any> {
+        return await prisma.document.update({
+            where: { id: documentId },
+            data: { reportCount: { increment: 1 } },
+        });
+    }
+
     // /**
     //  * Retrieve documents by department and level.
     //  */

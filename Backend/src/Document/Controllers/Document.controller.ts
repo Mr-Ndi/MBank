@@ -61,6 +61,22 @@ export const approveDocument = async (req: Request, res: Response, next: NextFun
     }
 };
 
+export const reportDocument = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body as { reason: string };
+        const userId = String(req.user?.id);
+        const result = await DocumentService.reportDocument(id, userId, reason);
+        return res.status(201).json({
+            message: "Document reported successfully",
+            data: result,
+            status: "success",
+        });
+    } catch (error) {
+        return next(error);
+    }
+};
+
 // export const getDocumentsByDepartmentAndLevel = async (req: Request, res: Response): Promise<any> => {
 //     const { department, level } = req.query;
 

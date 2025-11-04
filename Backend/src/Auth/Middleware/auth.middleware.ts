@@ -23,24 +23,23 @@ export default class AuthMiddleware {
       }
 
       const secret = process.env.JWT_SECRET as string;
-      if (!secret) {
-        // Misconfiguration guard
-        return next(new AppError('Server configuration error', 500));
-      }
+      if (!secret)
+        throw new AppError('Server configuration error', 500);
 
-  const decoded = jwt.verify(token, secret) as { id: string; username: string; role: 'ADMIN' | 'GUEST'; iat: number; exp: number };
+      const decoded = jwt.verify(token, secret) as { id: string; username: string; role: 'ADMIN' | 'GUEST'; iat: number; exp: number };
+
+      if (!decoded)
+        throw new AppError("Unauthorized", 401)
+
       // Load full user to satisfy typing and keep req.user consistent across app
       const user: UserInterface | null = await AuthRepository.findUserById(decoded.id);
-      if (!user) {
-        return next(new AppError('User not found', 401));
-      }
+      if (!user)
+        new AppError('Forbidden', 403);
 
       req.user = user;
-      next();
+      return next();
     } catch (err: any) {
-      // jwt errors: TokenExpiredError, JsonWebTokenError, NotBeforeError
-      const isJwtError = err?.name && ['TokenExpiredError', 'JsonWebTokenError', 'NotBeforeError'].includes(err.name);
-      return next(new AppError(isJwtError ? 'Invalid or expired token' : 'Authentication failed', isJwtError ? 401 : 500));
+      return next(err);
     }
   };
 

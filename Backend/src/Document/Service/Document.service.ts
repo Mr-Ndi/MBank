@@ -2,6 +2,7 @@ import DocumentRepo from "../Repository/Document.repo.js";
 import dotenv from "dotenv";
 import { DocUploadInterface } from "../Interface/Document.interface.js";
 import { AppError } from "../../utils/error.js";
+import { ReportReason } from "@prisma/client";
 dotenv.config();
 export default class DocumentService {
     /**
@@ -42,5 +43,21 @@ export default class DocumentService {
             if (error instanceof AppError) throw error;
             throw new AppError("Failed to approve document.", 500);
         }
+    }
+    
+    static async reportDocument(documentId: string, userId: string, reason: string): Promise<any> {
+        const exists = await DocumentRepo.findDocumentById(documentId);
+        if (!exists) {
+            throw new AppError("Document not found.", 404);
+        }
+
+        // Validate reason against enum
+        if (!Object.values(ReportReason).includes(reason as ReportReason)) {
+            throw new AppError("Invalid report reason.", 400);
+        }
+
+        const report = await DocumentRepo.createReport(documentId, userId, reason as ReportReason);
+        await DocumentRepo.incrementReportCount(documentId);
+        return report;
     }
 }

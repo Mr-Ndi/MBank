@@ -9,6 +9,13 @@ export enum DocumentCategory {
   CAT="CAT",
 }
 
+export enum ReportReasonEnum {
+  INAPPROPRIATE = "INAPPROPRIATE",
+  DUPLICATE = "DUPLICATE",
+  COPYRIGHT = "COPYRIGHT",
+  OTHER = "OTHER",
+}
+
 export default class DocumentSchemas {
   static documentSchema = Joi.object({
     school: Joi.string().trim().required(),
@@ -50,6 +57,12 @@ export default class DocumentSchemas {
 
   static documentIdParamSchema = Joi.object({
     id: Joi.string().uuid().required(),
+  }).required();
+
+  static reportSchema = Joi.object({
+    reason: Joi.string()
+      .valid(...Object.values(ReportReasonEnum))
+      .required(),
   }).required();
 }
 

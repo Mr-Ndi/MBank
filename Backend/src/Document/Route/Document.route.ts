@@ -1,5 +1,10 @@
 import express from "express";
-import { getDocuments, updateDocument, uploadDocument, approveDocument } from "../Controllers/Document.controller.js";
+import {
+	getDocuments,
+	updateDocument,
+	uploadDocument,
+	approveDocument,
+	reportDocument} from "../Controllers/Document.controller.js";
 import multer from "multer";
 import SharedMiddleware from "../../utils/middleware.shared.js";
 import AuthMiddleware from "../../Auth/Middleware/auth.middleware.js";
@@ -137,7 +142,7 @@ documentRouter.post(
  *   get:
  *     summary: Retrieve documents
  *     description: >
- *       Fetch documents from the database with optional filters.  
+ *       Fetch documents from the database with optional filters.
  *       You can filter by any field such as `school`, `moduleCode`, `department`, `category`, `level`.
  *     tags:
  *       - Documents
@@ -205,81 +210,63 @@ documentRouter.post(
  *                 data:
  *                   type: array
  *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                         example: 1
- *                       school:
- *                         type: string
- *                         example: "ICT"
- *                       moduleCode:
- *                         type: string
- *                         example: "CS123"
- *                       department:
- *                         type: string
- *                         example: "CS"
- *                       level:
- *                         type: integer
- *                         example: 3
- *                       moduleName:
- *                         type: string
- *                         example: "Intro"
- *                       date:
- *                         type: string
- *                         format: date-time
- *                         example: "2025-10-28T00:00:00.000Z"
- *                       category:
- *                         type: string
- *                         enum: [EXAM, ASSIGNMENT, QUIZ, CAT, OTHER]
- *                         example: "ASSIGNMENT"
- *                       url:
- *                         type: string
- *                         format: uri
- *                         example: "https://res.cloudinary.com/daxuxhhxr/image/upload/v1761673010/mbank/ibicupuri/wlecur6bsnvuhgoofgyc.png"
- *                       approved:
- *                         type: boolean
- *                         example: false
- *                       uploadedAt:
- *                         type: string
- *                         format: date-time
- *                         example: "2025-10-28T17:36:53.084Z"
- *                       studentId:
- *                         type: integer
- *                         nullable: true
- *                         example: null
- *                       reportCount:
- *                         type: integer
- *                         example: 0
+ *                     $ref: '#/components/schemas/Document'
  *       400:
  *         description: Invalid query parameters
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "error"
- *                 message:
- *                   type: string
- *                   example: "Invalid query parameters"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: "Level must be a number"
  *       500:
  *         description: Server error while fetching documents
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to fetch documents."
+ * 
+ * 
+ * /document/{id}/report:
+ *   post:
+ *     summary: Report a problem with a document
+ *     description: Authenticated users can report a document for reasons like inappropriate content, duplicate, or copyright issues.
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID of the document to report
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - reason
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 enum: [INAPPROPRIATE, DUPLICATE, COPYRIGHT, OTHER]
+ *                 example: INAPPROPRIATE
+ *     responses:
+ *       201:
+ *         description: Report created successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Server error while reporting document
  */
+
+documentRouter.post(
+  "/:id/report",
+  AuthMiddleware.authenticate,
+  SharedMiddleware.validateParams(DocumentSchemas.documentIdParamSchema),
+  SharedMiddleware.validateBody(DocumentSchemas.reportSchema),
+  reportDocument
+);
+
+// (Old swagger doc snippet removed; see the updated GET /document swagger block above.)
 
 documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQuerySchema), getDocuments);
 
@@ -296,7 +283,8 @@ documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQ
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: ID of the document to update
  *     requestBody:
  *       required: true
@@ -330,6 +318,7 @@ documentRouter.get("/", SharedMiddleware.validateQuery(DocumentSchemas.documentQ
  *       500:
  *         description: Failed to update document
  */
+
 documentRouter.put(
 	"/:id",
 	AuthMiddleware.authenticate,
@@ -380,6 +369,7 @@ documentRouter.put(
  *       500:
  *         description: Failed to approve document
  */
+
 documentRouter.patch(
 	"/:id/approve",
 	AuthMiddleware.authenticate,
@@ -387,9 +377,4 @@ documentRouter.patch(
 	SharedMiddleware.validateParams(DocumentSchemas.documentIdParamSchema),
 	approveDocument
 );
-
-// documentRouter.get("/download", downloadDocument);
-// documentRouter.get("/by-department-level", getDocumentsByDepartmentAndLevel);
-// documentRouter.get("/documents/by-module", getDocumentsByModule);
-
 export default documentRouter;

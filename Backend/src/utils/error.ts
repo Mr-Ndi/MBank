@@ -24,8 +24,6 @@ export const errorHandler: ErrorRequestHandler = (err: unknown, _req: Request, r
     });
     return;
   }
-
-  // Log unexpected errors for diagnostics
   console.error(err);
 
   res.status(500).json({
