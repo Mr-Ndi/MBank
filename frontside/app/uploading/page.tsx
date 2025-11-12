@@ -53,7 +53,7 @@ export default function UploadPage() {
         
         {uploadSuccess && (
           <p className="text-green-600 bg-green-100 border border-green-400 px-4 py-2 rounded-md mb-4">
-            ✅ File uploaded successfully!
+            File uploaded successfully!
           </p>
         )}
 

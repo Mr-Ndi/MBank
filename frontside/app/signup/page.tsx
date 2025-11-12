@@ -6,40 +6,37 @@ import { signup, googleLogin } from "../utils/api";
 import Joi from "joi";
 
 const registerSchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
   username: Joi.string().required(),
   email: Joi.string().email({ tlds: { allow: false } }).required(),
   password: Joi.string().min(8).required(),
   confirmPassword: Joi.any().valid(Joi.ref("password")).required(),
-  school: Joi.string().required(),
-  department: Joi.string().required(),
-  regnumber: Joi.number().required(),
 });
 
 export default function Signup() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [school, setSchool] = useState("");
-  const [department, setDepartment] = useState("");
-  const [regnumber, setRegnumber] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ 
+    firstName?: string;
+    lastName?: string;
     username?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
-    school?: string;
-    department?: string;
-    regnumber?: string;
   }>({});
   const router = useRouter();
 
   const handleSignup = async (e: any) => {
     e.preventDefault();
     
-    const { error } = registerSchema.validate({ username, email, password, confirmPassword, school, department, regnumber }, { abortEarly: false });
+    const { error } = registerSchema.validate({ firstName, lastName, username, email, password, confirmPassword }, { abortEarly: false });
     if (error) {
       const formattedErrors = error.details.reduce<Record<string, string>>((acc, curr) => {
         acc[curr.path[0] as string] = curr.message;
@@ -50,7 +47,7 @@ export default function Signup() {
     }
 
     try {
-      const data = await signup(Number(regnumber), email, password, username, school, department);
+      const data = await signup(firstName, lastName, username, email, password);
       document.cookie = `token=${data.token}; path=/; secure; HttpOnly`;
       router.push("/dashboard");
     } catch (err: any) {
@@ -82,20 +79,18 @@ export default function Signup() {
         </button>
 
         <form onSubmit={handleSignup} className="space-y-4">
+          <div className="flex space-x-2">
+            <input type="text" placeholder="First name" className="w-1/2 p-3 border rounded-md" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+            <input type="text" placeholder="Last name" className="w-1/2 p-3 border rounded-md" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          </div>
+          {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
+          {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+
           <input type="text" placeholder="Username" className="w-full p-3 border rounded-md" value={username} onChange={(e) => setUsername(e.target.value)} required />
           {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
           
           <input type="email" placeholder="Email" className="w-full p-3 border rounded-md" value={email} onChange={(e) => setEmail(e.target.value)} required />
           {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-
-          <input type="text" placeholder="School" className="w-full p-3 border rounded-md" value={school} onChange={(e) => setSchool(e.target.value)} required />
-          {errors.school && <p className="text-red-500 text-sm">{errors.school}</p>}
-
-          <input type="text" placeholder="Department" className="w-full p-3 border rounded-md" value={department} onChange={(e) => setDepartment(e.target.value)} required />
-          {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}
-
-          <input type="number" placeholder="Registration Number" className="w-full p-3 border rounded-md" value={regnumber} onChange={(e) => setRegnumber(e.target.value)} required />
-          {errors.regnumber && <p className="text-red-500 text-sm">{errors.regnumber}</p>}
 
           <div className="relative">
             <input type={showPassword ? "text" : "password"} placeholder="Password" className="w-full p-3 border rounded-md" value={password} onChange={(e) => setPassword(e.target.value)} required />

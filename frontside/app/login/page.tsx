@@ -14,7 +14,14 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const data = await login(email, password);
-      localStorage.setItem("token", data.token);
+      // store token and user payload (if present)
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
+      }
+      const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
+      if (userPayload) {
+        localStorage.setItem("user", JSON.stringify(userPayload));
+      }
       router.push("/");
     } catch (err: any) {
       alert(err.message);
@@ -25,7 +32,9 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       const data = await googleLogin();
-      localStorage.setItem("token", data.token);
+      if (data?.token) localStorage.setItem("token", data.token);
+      const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
+      if (userPayload) localStorage.setItem("user", JSON.stringify(userPayload));
       router.push("/");
     } catch (err: any) {
       alert(err.message);
