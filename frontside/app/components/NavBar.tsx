@@ -1,16 +1,58 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter(); 
 
+  useEffect(() => {
+    const check = () => {
+      try {
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        setIsAuthenticated(!!token);
+      } catch (e) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    check();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "token") check();
+    };
+
+    const onAuthChanged = (e: Event) => {
+      // custom event when auth changed in same tab
+      check();
+    };
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("auth-changed", onAuthChanged as EventListener);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("auth-changed", onAuthChanged as EventListener);
+    };
+  }, []);
+
   const handleLoginClick = () => {
-    setIsOpen(false); 
-    router.push("/login"); 
+    setIsOpen(false);
+    router.push("/login");
+  };
+
+  const handleLogoutClick = () => {
+    setIsOpen(false);
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    } catch (e) {
+      // ignore
+    }
+    setIsAuthenticated(false);
+    router.push("/");
   };
 
   return (
@@ -33,13 +75,22 @@ const Navbar = () => {
           <li><Link href="/contact" className="hover:text-blue-700">Contact Us</Link></li>
         </ul>
 
-        {/* Login Button */}
-        <button
-          onClick={handleLoginClick}
-          className="hidden md:block bg-white text-blue-700 px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:text-white"
-        >
-          Login
-        </button>
+        {/* Login / Logout Button */}
+        {isAuthenticated ? (
+          <button
+            onClick={handleLogoutClick}
+            className="hidden md:block bg-white text-red-600 px-4 py-2 rounded-lg shadow-md hover:bg-red-600 hover:text-white"
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            onClick={handleLoginClick}
+            className="hidden md:block bg-white text-blue-700 px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:text-white"
+          >
+            Login
+          </button>
+        )}
 
         {/* Mobile Menu Button */}
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
@@ -62,12 +113,21 @@ const Navbar = () => {
             </button>
           </li>
           <li>
-            <button
-              onClick={handleLoginClick}
-              className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Login
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogoutClick}
+                className="block bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={handleLoginClick}
+                className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Login
+              </button>
+            )}
           </li>
         </ul>
       )}

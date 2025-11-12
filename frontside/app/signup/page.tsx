@@ -48,8 +48,15 @@ export default function Signup() {
 
     try {
       const data = await signup(firstName, lastName, username, email, password);
-      document.cookie = `token=${data.token}; path=/; secure; HttpOnly`;
-      router.push("/dashboard");
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
+      }
+      const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
+      if (userPayload) localStorage.setItem("user", JSON.stringify(userPayload));
+      try {
+        window.dispatchEvent(new CustomEvent("auth-changed", { detail: { token: data.token, user: userPayload } }));
+      } catch (e) {}
+      router.push("/browse");
     } catch (err: any) {
       alert(err.message);
     }
@@ -58,8 +65,13 @@ export default function Signup() {
   const handleGoogleSignup = async () => {
     try {
       const data = await googleLogin();
-      document.cookie = `token=${data.token}; path=/; secure; HttpOnly`;
-      router.push("/");
+      if (data?.token) localStorage.setItem("token", data.token);
+      const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
+      if (userPayload) localStorage.setItem("user", JSON.stringify(userPayload));
+      try {
+        window.dispatchEvent(new CustomEvent("auth-changed", { detail: { token: data.token, user: userPayload } }));
+      } catch (e) {}
+      router.push("/browse");
     } catch (err: any) {
       alert(err.message);
     }

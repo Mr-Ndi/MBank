@@ -22,7 +22,15 @@ const LoginPage = () => {
       if (userPayload) {
         localStorage.setItem("user", JSON.stringify(userPayload));
       }
-      router.push("/");
+
+      // notify other parts of the app in this tab that auth changed
+      try {
+        window.dispatchEvent(new CustomEvent("auth-changed", { detail: { token: data.token, user: userPayload } }));
+      } catch (e) {
+        /* ignore */
+      }
+
+      router.push("/browse");
     } catch (err: any) {
       alert(err.message);
     }
@@ -32,10 +40,10 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       const data = await googleLogin();
-      if (data?.token) localStorage.setItem("token", data.token);
-      const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
-      if (userPayload) localStorage.setItem("user", JSON.stringify(userPayload));
-      router.push("/");
+  if (data?.token) localStorage.setItem("token", data.token);
+  const userPayload = Array.isArray(data?.data) ? data.data[0] : data?.data;
+  if (userPayload) localStorage.setItem("user", JSON.stringify(userPayload));
+  router.push("/browse");
     } catch (err: any) {
       alert(err.message);
     }
