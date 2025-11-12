@@ -1,0 +1,49 @@
+name: Build and Push Backend Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for changes in Backend directory
+        id: backend_changes
+        run: |
+          echo "Checking for changes in Backend folder..."
+          if git diff --quiet HEAD^ HEAD -- Backend/; then
+            echo "No changes in Backend folder."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in Backend folder."
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stop if no changes in Backend
+        if: steps.backend_changes.outputs.changed == 'false'
+        run: |
+          echo "No Backend changes detected — skipping build."
+          exit 0
+
+      - name: Log in to Docker Hub
+        if: steps.backend_changes.outputs.changed == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        if: steps.backend_changes.outputs.changed == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./Backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mbank-backend:latest

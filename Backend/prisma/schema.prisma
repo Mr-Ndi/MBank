@@ -13,47 +13,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student {
-  id         Int        @id @default(autoincrement())
-  email      String     @unique
-  username   String
-  password   String
-  school     String
-  department String
-  regnumber  Int
-  document   Document[]
-  Report     Report[]
+model User {
+  id        String     @id @default(uuid())
+  googleId  String?    @unique
+  email     String     @unique
+  firstName String
+  lastName  String
+  username  String
+  password  String?
+  role      Role       @default(GUEST)
+  createdAt DateTime   @default(now())
+  document  Document[]
+  Report    Report[]
 }
 
 model Document {
-  id          Int              @id @default(autoincrement())
+  id          String           @id @default(uuid())
   school      String
-  fieldId     String
-  Department  String
+  moduleCode  String
+  department  String
   level       Int
-  module      String
+  moduleName  String
   date        DateTime
   category    DocumentCategory
   url         String
-  studentId   Int
-  Student     Student          @relation(fields: [studentId], references: [id])
+  approved    Boolean          @default(false)
+  uploadedAt  DateTime         @default(now())
+  userId      String?
+  User        User?            @relation(fields: [userId], references: [id])
   reportCount Int              @default(0)
   Report      Report[]
 }
 
 enum DocumentCategory {
-  quiz
+  ASSIGNMENT
   CAT
   EXAM
+  QUIZ
 }
 
 model Report {
   id         Int          @id @default(autoincrement())
   reason     ReportReason
   status     ReportStatus @default(PENDING)
-  studentId  Int
-  documentId Int
-  Student    Student      @relation(fields: [studentId], references: [id])
+  userId     String
+  documentId String
+  User       User         @relation(fields: [userId], references: [id])
   Document   Document     @relation(fields: [documentId], references: [id])
   createdAt  DateTime     @default(now())
 }
@@ -69,4 +74,9 @@ enum ReportStatus {
   PENDING
   REVIEWED
   RESOLVED
+}
+
+enum Role {
+  ADMIN
+  GUEST
 }
