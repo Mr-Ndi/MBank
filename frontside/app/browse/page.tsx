@@ -1,12 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye } from "lucide-react";
-
-const mockData = Array(10).fill({
-  moduleName: "Module Example",
-  dateIssued: "Jan 20, 2024",
-  category: "Exam",
-});
+import { getDocuments } from "../utils/api";
 
 export default function BrowsePage() {
   const [category, setCategory] = useState("");
@@ -14,11 +9,30 @@ export default function BrowsePage() {
   const [page, setPage] = useState(1);
   const [downloading, setDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
-  const [filteredData, setFilteredData] = useState(mockData);
+  const [documents, setDocuments] = useState<any[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getDocuments()
+      .then((res) => {
+        // assume backend returns an array in res.data or res
+        const items = Array.isArray(res) ? res : res?.data ?? [];
+        setDocuments(items);
+        setFilteredData(items);
+      })
+      .catch((err) => {
+        console.error("Failed to load documents", err);
+        setError(err.message || "Failed to load documents");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleSearch = () => {
-    const results = mockData.filter(item =>
-      item.moduleName.toLowerCase().includes(moduleName.toLowerCase())
+    const results = documents.filter((item) =>
+      (item.moduleName || "").toLowerCase().includes(moduleName.toLowerCase())
     );
     setFilteredData(results);
   };
@@ -63,18 +77,16 @@ export default function BrowsePage() {
         />
 
         {/* Search Button */}
-        <button 
-          onClick={handleSearch} 
+        <button
+          onClick={handleSearch}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           Search
         </button>
       </div>
 
-      {/* No Results Message */}
-      {filteredData.length === 0 && (
-        <p className="text-red-500 font-semibold">Search for something else</p>
-      )}
+      {loading && <p className="text-gray-700">Loading documents...</p>}
+      {error && <p className="text-red-600">{error}</p>}
 
       {/* Download Progress Bar & Alert */}
       {downloading && (
@@ -93,15 +105,15 @@ export default function BrowsePage() {
 
       {/* Grid Display */}
       <div className="grid grid-cols-4 gap-6">
-        {filteredData.map((item, index) => (
+        {filteredData.map((item: any, index: number) => (
           <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-lg w-64">
             <div className="h-24 bg-gray-400 rounded mb-4"></div>
             <div className="flex justify-between mb-2">
-              <span className="text-blue-600 font-semibold">{item.moduleName}</span>
-              <span className="text-gray-600">{item.dateIssued}</span>
+              <span className="text-blue-600 font-semibold">{item.moduleName || item.module_name || "Untitled"}</span>
+              <span className="text-gray-600">{item.date || item.dateIssued || "-"}</span>
             </div>
-            <span className="block text-gray-800 mb-3">{item.category}</span>
-            
+            <span className="block text-gray-800 mb-3">{item.category || "-"}</span>
+
             {/* Action Buttons */}
             <div className="flex justify-between">
               <button className="flex items-center gap-2 border px-3 py-2 rounded-lg hover:bg-gray-200 transition">

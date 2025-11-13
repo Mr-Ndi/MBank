@@ -2,14 +2,19 @@
 import { useState } from "react";
 import Navbar from "../components/NavBar";
 import { useRouter } from "next/navigation";
+import { uploadCopy } from "../utils/api";
 
 export default function UploadPage() {
   const [school, setSchool] = useState("");
   const [category, setCategory] = useState("");
   const [department, setDepartment] = useState("");
   const [level, setLevel] = useState("");
+  const [moduleCode, setModuleCode] = useState("");
   const [moduleName, setModuleName] = useState("");
+  const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const router = useRouter();
 
@@ -34,9 +39,57 @@ export default function UploadPage() {
       alert("Please upload a file");
       return;
     }
-    console.log("Uploading:", { school, category, department, level, moduleName, file });
-    setUploadSuccess(true);
-    setTimeout(() => setUploadSuccess(false), 3000);
+
+    // client-side checks
+    const maxBytes = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxBytes) {
+      alert("File is too large. Max size is 5MB.");
+      return;
+    }
+
+    const allowed = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+      "image/png",
+      "image/jpeg",
+    ];
+    if (file.type && !allowed.includes(file.type)) {
+      const name = file.name.toLowerCase();
+      if (!name.endsWith(".pdf") && !name.endsWith(".docx") && !name.endsWith(".txt") && !name.endsWith(".png") && !name.endsWith(".jpg") && !name.endsWith(".jpeg")) {
+        alert("Unsupported file type. Allowed: PDF, DOCX, TXT, PNG, JPEG");
+        return;
+      }
+    }
+
+    if (!school || !category || !department || !level || !moduleName || !moduleCode || !date) {
+      alert("Please fill in all required fields (school, category, department, level, module code, module name, date).");
+      return;
+    }
+
+    setUploading(true);
+    setProgress(0);
+
+    uploadCopy(
+      file,
+      { school, moduleCode, department, level, moduleName, date, category },
+      (p) => setProgress(p)
+    )
+      .then((res) => {
+        console.log("upload response", res);
+        setUploadSuccess(true);
+        setFile(null);
+        // brief delay so user sees success state, then navigate to /browse
+        setTimeout(() => {
+          setUploadSuccess(false);
+          router.push("/browse");
+        }, 800);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert(err.message || "Upload failed");
+      })
+      .finally(() => setUploading(false));
   };
 
   return (
@@ -79,9 +132,11 @@ export default function UploadPage() {
             {/* Category Selection */}
             <select value={category} onChange={(e) => setCategory(e.target.value)} className="border p-2 rounded">
               <option value="">Select the category</option>
-              <option>Quiz</option>
-              <option>CAT</option>
-              <option>Exam</option>
+              <option value="EXAM">EXAM</option>
+              <option value="ASSIGNMENT">ASSIGNMENT</option>
+              <option value="QUIZ">QUIZ</option>
+              <option value="OTHER">OTHER</option>
+              <option value="CAT">CAT</option>
             </select>
 
             {/* Department Selection - Updates Based on Selected School */}
@@ -101,10 +156,19 @@ export default function UploadPage() {
             </select>
 
             <input
-              type="text"
+              type="number"
+              min={1}
               placeholder="Enter the academic level"
               value={level}
               onChange={(e) => setLevel(e.target.value)}
+              className="border p-2 rounded"
+            />
+
+            <input
+              type="text"
+              placeholder="Enter the module code (e.g. CS101)"
+              value={moduleCode}
+              onChange={(e) => setModuleCode(e.target.value)}
               className="border p-2 rounded"
             />
 
@@ -117,8 +181,15 @@ export default function UploadPage() {
             />
 
             <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="border p-2 rounded"
+            />
+
+            <input
               type="file"
-              accept=".pdf,.docx,.txt"
+              accept=".pdf,.docx,.txt,.png,.jpg,.jpeg"
               onChange={(e) => setFile(e.target.files?.[0] || null)}
               className="border p-2 rounded col-span-2"
             />
@@ -127,13 +198,24 @@ export default function UploadPage() {
             </p>
           </div>
 
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-6 items-center">
             <button type="button" onClick={() => router.back()} className="bg-gray-500 text-white px-6 py-2 rounded-lg">
               Back
             </button>
-            <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg">
-              Upload
-            </button>
+            <div className="w-1/2 flex items-center justify-end">
+              {uploading ? (
+                <div className="w-full">
+                  <div className="w-full bg-gray-200 rounded h-3 overflow-hidden">
+                    <div className="bg-green-500 h-3" style={{ width: `${progress}%` }} />
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1 text-right">Uploading... {progress}%</p>
+                </div>
+              ) : (
+                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg">
+                  Upload
+                </button>
+              )}
+            </div>
           </div>
         </form>
       </div>

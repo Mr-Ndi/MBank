@@ -68,3 +68,57 @@ export const googleLogin = async () => {
     throw new Error(error.response?.data?.message || "Google login failed");
   }
 };
+
+
+export const uploadCopy = async (
+  file: File,
+  metadata: {
+    school: string;
+    moduleCode?: string;
+    department: string;
+    level: number | string;
+    moduleName: string;
+    date?: string;
+    category: string;
+  },
+  onProgress?: (percent: number) => void
+) => {
+  try {
+    const form = new FormData();
+    form.append("file", file as any);
+    form.append("school", metadata.school);
+    form.append("moduleCode", metadata.moduleCode ?? metadata.moduleName);
+    form.append("department", metadata.department);
+    form.append("level", String(metadata.level));
+    form.append("moduleName", metadata.moduleName);
+    form.append("date", metadata.date ?? new Date().toISOString());
+    form.append("category", metadata.category);
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    const headers: any = { "Content-Type": "multipart/form-data" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const response = await api.post("/document/upload", form, {
+      headers,
+      onUploadProgress: (progressEvent: any) => {
+        if (!progressEvent || !progressEvent.total) return;
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onProgress?.(percentCompleted);
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || error.message || "Upload failed");
+  }
+};
+
+export const getDocuments = async () => {
+  try {
+    const response = await api.get("/document");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || error.message || "Failed to fetch documents");
+  }
+};
